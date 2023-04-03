@@ -1,91 +1,68 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import React from "react";
+import { useState, useEffect } from "react";
+import logo from "../../public/images/TandaLogo.png";
+import Image from "next/image";
 
 export default function Home() {
+  const [currentTime, setCurrentTime] = useState("");
+  const [idText, setIdText] = useState("");
+
+  useEffect(() => {
+    setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString());
+    });
+  }, []);
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
+    <main className="min-h-screen bg-bg_main bg-center bg-no-repeat flex justify-center items-center">
+      <div className="w-[500px] h-[800px] backdrop-blur-sm bg-gray-800/90 rounded-3xl">
+        <div className="flex justify-center">
+          <div className="w-[300px] mt-10">
+            <Image src={logo} alt="" />
+          </div>
+        </div>
+
+        <div className="flex justify-center mt-2">
+          <label className="text-white font-bold text-[60px]">
+            {currentTime}
+          </label>
+        </div>
+        <div className="flex justify-center m-4 text-[24px] px-6">
+          <input className="w-full p-2 border-2 border-black" readOnly />
+        </div>
+
         <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+          <div className="grid grid-cols-3 w-full">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((index: any) => (
+              <div key={index} className="m-2">
+                <div className="flex justify-center">
+                  <button className="bg-white w-[70px] h-[70px] text-[30px] rounded-full hover:bg-slate-400">
+                    {index}
+                  </button>
+                </div>
+              </div>
+            ))}
+            <div></div>
+            <div className="col-span-1 flex justify-center">
+              <button className="bg-white w-[70px] h-[70px] text-[30px] rounded-full m-2">
+                0
+              </button>
+            </div>
+
+            <div className="flex justify-center">
+              <button className="bg-white w-[70px] h-[70px] text-[30px] rounded-full m-2"></button>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
+        <div className="m-4 flex justify-center">
+          <button className="bg-blue-400 text-[30px] px-8 rounded-full text-white">
+            CLOCK
+          </button>
         </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
       </div>
     </main>
-  )
+  );
 }
