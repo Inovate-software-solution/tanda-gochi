@@ -15,7 +15,7 @@ const Customers = ({ onTitleChange }) => {
   return (
     <div className='bg-gray-100 min-h-screen'>
       <div className='flex justify-between p-4'>
-        <h2>Customers</h2>
+        <h2></h2>
       </div>
       <div className='p-4'>
         <div className='w-full m-auto p-4 border rounded-lg bg-white overflow-y-auto'>
@@ -45,14 +45,15 @@ const Customers = ({ onTitleChange }) => {
                 </div>
                 <p className='lg:flex md:hidden text-sm'>{order.date}</p>
                 <div className='flex items-center'>
-                  <span className='text-gray-400 text-sm'>${order.total}</span>
+                  
                   <BsThreeDotsVertical className='text-gray-400 ml-2' />
                 </div>
               </li>
-            ))}
+            ))}   
           </ul>
         </div>
       </div>
+  
     </div>
   );
 };
