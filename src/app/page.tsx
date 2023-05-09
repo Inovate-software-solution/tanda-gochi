@@ -147,7 +147,7 @@ export default function Home() {
                   setSuccess(false);
                 }}
               >
-                Back
+                BACK
               </button>
             </div>
           </div>
@@ -175,7 +175,7 @@ export default function Home() {
                   setFailed(false);
                 }}
               >
-                Back
+                BACK
               </button>
             </div>
           </div>
