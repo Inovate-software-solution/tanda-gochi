@@ -120,7 +120,7 @@ export default function Home() {
                   }
                 }}
               >
-                CLOCK
+                clock
               </button>
             </div>
           </div>
