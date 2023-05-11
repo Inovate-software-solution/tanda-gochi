@@ -10,6 +10,7 @@
     "test": "echo 'No tests implemented yet.' && exit 1"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
     "@types/node": "18.15.11",
     "@types/react": "18.0.32",
     "@types/react-dom": "18.0.11",
@@ -20,6 +21,8 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
+    "react-redux": "^8.0.5",
+    "redux": "^4.2.1",
     "typescript": "5.0.3"
   },
   "devDependencies": {
