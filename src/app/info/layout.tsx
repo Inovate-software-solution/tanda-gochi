@@ -12,12 +12,12 @@ export default function InfoLayout({
   children: React.ReactNode;
 }) {
 
-  const router = useRouter();
+ /*  const router = useRouter();
   const appUsername = useSelector((state: RootState) => state.user.username);
   useEffect(()=>{
     if (appUsername==null){
         router.push("/auth");
     }
-  })
+  }) */
   return <Sidebar>{children}</Sidebar>;
 }

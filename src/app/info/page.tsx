@@ -1,19 +1,27 @@
 "use client";
 
-import React from "react";
-import { useState, useEffect } from "react";
-
+import React, { useState } from "react";
 import Header from "../../../components/Header";
 import TopCards from "../../../components/TopCards";
 import BarChart from "../../../components/BarChart";
-import BarChart2 from "../../../components/BarChart 2";
+import BarChart2 from "../../../components/BarChart2";
 import RecentOrders from "../../../components/leaderboard";
 
-export default function page() {
+export default function Page() {
   const [chartType, setChartType] = useState("BarChart");
 
   const toggleChart = () => {
-    setChartType(chartType === "BarChart" ? "BarChart2" : "BarChart");
+    setChartType((prevChartType) =>
+      prevChartType === "BarChart" ? "BarChart2" : "BarChart"
+    );
+  };
+
+  const handleChartClick = () => {
+    if (chartType === "BarChart2") {
+      setChartType("BarChart");
+    } else {
+      setChartType("BarChart2");
+    }
   };
 
   return (
@@ -22,10 +30,13 @@ export default function page() {
         <Header title={""} />
         <TopCards />
         <div className="p-4 grid md:grid-cols-3 grid-cols-1 gap-4">
-          {chartType === "BarChart" ? <BarChart /> : <BarChart2 />}
+          {chartType === "BarChart" ? (
+            <BarChart onClick={handleChartClick} />
+          ) : (
+            <BarChart2 onClick={handleChartClick} />
+          )}
           <RecentOrders />
         </div>
-        <button onClick={toggleChart}>next chart</button>
       </main>
     </div>
   );
