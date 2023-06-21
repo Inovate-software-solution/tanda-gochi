@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import Header from "../../../components/Header";
 import happyDog from "./dog.jpeg";
-import sadDog from "./dog.jpeg";
+import sadDog from "./uphappy.png";
 import Image from "next/image";
 export default function Page() {
   const [happiness, setHappiness] = useState(50);
