@@ -29,5 +29,11 @@ export default function InfoLayout({
   // } else {
   //   return <Sidebar>{children}</Sidebar>;
   // }
+  if (appUsername == null) {
+    router.push("/auth");
+  } else if (appUsername == "admin") {
   return <Sidebar>{children}</Sidebar>;
+  } else {
+    return <div>Access Denied</div>;
+  }
 }
