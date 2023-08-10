@@ -14,6 +14,10 @@ export default function InfoLayout({
   const router = useRouter();
   const appUsername = useSelector((state: RootState) => state.user.username);
   const [isLoading, setIsLoading] = useState(true);
-  
-  return <Sidebar>{children}</Sidebar>;
+  if (appUsername === "user") {
+   <Sidebar>{children}</Sidebar>;
+  }
+  else {
+    router.push("/auth");
+  }
 }
