@@ -1,6 +1,6 @@
 "use client";
 
-import Sidebar from "../../../components/Sidebar";
+import Sidebar from "../../../components/Info/Sidebar";
 import { useRouter } from "next/navigation";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";

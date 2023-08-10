@@ -1,7 +1,7 @@
   "use client";
   import React, { useState, useEffect } from "react";
-  import Sidebar from "../../../components/Sidebar";
-  import Header from "../../../components/Header";
+  import Sidebar from "../../../components/Info/Sidebar";
+  import Header from "../../../components/Info/Header";
   import foxGif from "./fox.gif";
   import standSprite0 from "./sprite_0.png";
   import standSprite1 from "./sprite_1.png";
@@ -64,18 +64,17 @@
       <div>
         <Sidebar>
           <main className="bg-gray-100 min-h-screen">
-            <Header title="Virtual Pet" />
-            <div className="p-4">
-              <h1 className="text-4xl font-bold mb-4">Virtual Pet</h1>
+            <div>
+              <h1 className="text-4xl font-bold mb-4 p-4">Virtual Pet</h1>
               <div
-                className="flex items-center justify-center mb-8"
-                style={{ position: "relative", width: "200px", height: "100px" }}
+                className="relative min-h-128 bg-bg_pet bg-center bg-no-repeat flex justify-center items-center w-full"
+                style={{ height: '50vh' }}
               >
                 <div
                   style={{
                     position: "absolute",
                     left: `${position * 48}px`,
-                    top: "0",
+                    top: "60%",
                     width: "1000px",
                     height: "48px",
                     transform: direction === "left" ? "scaleX(-1)" : "scaleX(1)",
@@ -101,47 +100,47 @@
                   )}
                 </div>
               </div>
-              <div className="flex justify-between">
-                <div>
-                  <p className="font-bold">Happiness</p>
-                  <div className="bg-gray-300 h-3 rounded-md">
-                    <div
-                      className="bg-green-400 h-full rounded-md"
-                      style={{ width: `${happiness}%` }}
-                    ></div>
+              <div className="flex justify-between w-3/5 p-4">
+                  <div>
+                    <p className="font-bold">Happiness</p>
+                    <div className="bg-gray-300 h-3 rounded-md">
+                      <div
+                        className="bg-green-400 h-full rounded-md"
+                        style={{ width: `${happiness}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs mt-1">{happiness}%</p>
                   </div>
-                  <p className="text-xs mt-1">{happiness}%</p>
-                </div>
-                <div>
-                  <p className="font-bold">Hunger</p>
-                  <div className="bg-gray-300 h-3 rounded-md">
-                    <div
-                      className="bg-red-400 h-full rounded-md"
-                      style={{ width: `${hunger}%` }}
-                    ></div>
+                  <div>
+                    <p className="font-bold">Hunger</p>
+                    <div className="bg-gray-300 h-3 rounded-md">
+                      <div
+                        className="bg-red-400 h-full rounded-md"
+                        style={{ width: `${hunger}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs mt-1">{hunger}%</p>
                   </div>
-                  <p className="text-xs mt-1">{hunger}%</p>
-                </div>
-              </div>
-              <div className="mt-8 flex justify-center">
-                <button
-                  className="bg-green-500 text-white px-4 py-2 rounded-md mr-4"
-                  onClick={playWithPet}
-                >
-                  Play
-                </button>
-                <button
-                  className="bg-red-500 text-white px-4 py-2 rounded-md"
-                  onClick={feedPet}
-                >
-                  Feed
-                </button>
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md ml-4"
-                  onClick={switchPet}
-                >
-                  Switch Pet
-                </button>
+                  <div>
+                    <button
+                      className="bg-green-500 text-white px-4 py-2 rounded-md mr-4"
+                      onClick={playWithPet}
+                    >
+                      Play
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-4 py-2 rounded-md"
+                      onClick={feedPet}
+                    >
+                      Feed
+                    </button>
+                    <button
+                      className="bg-blue-500 text-white px-4 py-2 rounded-md ml-4"
+                      onClick={switchPet}
+                    >
+                      Switch Pet
+                    </button>
+                  </div>
               </div>
             </div>
           </main>

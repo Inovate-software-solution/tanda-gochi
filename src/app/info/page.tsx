@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import Header from "../../../components/Header";
-import TopCards from "../../../components/TopCards";
-import BarChart from "../../../components/BarChart";
-import BarChart2 from "../../../components/BarChart2";
-import RecentOrders from "../../../components/leaderboard";
+import Header from "../../../components/Info/Header";
+import TopCards from "../../../components/Info/TopCards";
+import BarChart from "../../../components/Info/BarChart";
+import BarChart2 from "../../../components/Info/BarChart2";
+import RecentOrders from "../../../components/Info/leaderboard";
 
 export default function Page() {
   const [chartType, setChartType] = useState("BarChart");

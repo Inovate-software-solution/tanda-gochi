@@ -11,6 +11,7 @@ module.exports = {
   theme: {
     backgroundImage: {
       bg_main: "url('/images/bg.jpg')",
+      bg_pet: "url('/images/pet_bg.png')",
     },
     extend: {
       fontSize: {
