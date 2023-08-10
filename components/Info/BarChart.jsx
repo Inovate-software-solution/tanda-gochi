@@ -19,7 +19,7 @@ ChartJS.register(
   Legend
 );
 
-const BarChart = () => {
+const BarChart = ({ onClick }) => {
   const [chartData, setChartData] = useState({
     datasets: [],
   });
@@ -28,34 +28,41 @@ const BarChart = () => {
 
   useEffect(() => {
     setChartData({
-        labels: ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'],
-        datasets: [
-            {
-                label: 'people late',
-                data: [250, 250, 100, 10, 20, 0,500],
-                borderColor: 'rgb(53, 162, 235)',
-                backgroundColor: 'rgb(53, 162, 235, 0.4',
-              }, 
-        ]
-    })
-    setChartOptions({
-        plugins: {
-            legend: {
-                position: 'top',
-            },
-            title: {
-                display: true,
-                text: 'Daily '
-            }
+      labels: ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'],
+      datasets: [
+        {
+          label: 'people late',
+          data: [250, 250, 100, 10, 20, 0, 500],
+          borderColor: 'rgb(53, 162, 235)',
+          backgroundColor: 'rgb(53, 162, 235, 0.4)',
         },
-        maintainAspectRatio: false,
-        responsive: true
-    })
-  }, [])
+      ],
+    });
+    setChartOptions({
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Daily',
+        },
+      },
+      maintainAspectRatio: false,
+      responsive: true,
+    });
+  }, []);
+
+  const handleClick = () => {
+    onClick && onClick(); // Call the onClick function if it's provided
+  };
 
   return (
     <>
-      <div className='w-full md:col-span-2 relative lg:h-[70vh] h-[50vh] m-auto p-4 border rounded-lg bg-white'>
+      <div
+        className='w-full md:col-span-2 relative lg:h-[70vh] h-[50vh] m-auto p-4 border rounded-lg bg-white'
+        onClick={handleClick}
+      >
         <Bar data={chartData} options={chartOptions} />
       </div>
     </>
