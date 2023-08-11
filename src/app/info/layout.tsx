@@ -14,26 +14,36 @@ export default function InfoLayout({
   const router = useRouter();
   const appUsername = useSelector((state: RootState) => state.user.username);
   const [isLoading, setIsLoading] = useState(true);
+  const [content, setContent] = useState<'loading' | 'sidebar' | 'accessDenied' | 'redirectToAuth'>('loading');
 
   useEffect(() => {
-    // if (appUsername == null) {
-    //   router.push("/auth");
-    // }
-    // } else {
-    //   setIsLoading(false);
-    // }
-  }, []);
+    if (appUsername == null) {
+      setContent('redirectToAuth');
+    } else if (appUsername === "admin") {
+      setContent('sidebar');
+    } else {
+      setContent('accessDenied');
+    }
+  }, [appUsername]);
+  
 
   // if (isLoading) {
   //   return <div>Loading...</div>; // Or your loading component
   // } else {
   //   return <Sidebar>{children}</Sidebar>;
   // }
-  if (appUsername == null) {
-    router.push("/auth");
-  } else if (appUsername == "admin") {
-  return <Sidebar>{children}</Sidebar>;
-  } else {
-    return <div>Access Denied</div>;
+  if (content === 'loading') {
+    return <div>Loading...</div>;
   }
+  
+  if (content === 'redirectToAuth') {
+    router.push("/auth");
+    return null;
+  }
+  
+  if (content === 'sidebar') {
+    return <Sidebar>{children}</Sidebar>;
+  }
+  
+  return <div>Access Denied</div>;  
 }
