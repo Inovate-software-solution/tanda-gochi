@@ -21,9 +21,12 @@ export default function Page() {
   const [direction, setDirection] = useState("stand");
   const [currentPet, setCurrentPet] = useState("sprite");
 
+  // Inventory related states
+
   // UI related states
   const [isWindowVisible, setWindowVisible] = useState(false);
   const [windowTitle, setWindowTitle] = useState("");
+  const [inventoryType, setInventoryType] = useState("");
 
   const feedPet = () => {
     setFullness((prevFullness) => (prevFullness < 90 ? prevFullness + 10 : 100));
@@ -37,9 +40,10 @@ export default function Page() {
     setCurrentPet((prevPet) => (prevPet === "sprite" ? "gif" : "sprite"));
   };
 
-  const toggleWindow = (title = "") => {
+  const toggleWindow = (title = "", type = "") => {
     setWindowTitle(title);
     setWindowVisible(!isWindowVisible);
+    setInventoryType(type);
   };
   
   // decrement happiness and fullness
@@ -91,7 +95,7 @@ export default function Page() {
           <h1 className="text-4xl font-bold mb-4">Virtual Pet</h1>
           <div className="flex flex-col justify-center items-center h-full">
             <div className="relative bg-bg_pet bg-center bg-no-repeat flex justify-center items-center w-full" style={{ height: '50vh' }}>
-              <Inventory visibilityProp={isWindowVisible} titleProp={windowTitle} toggleProp={toggleWindow}/>
+              <Inventory visibilityProp={isWindowVisible} titleProp={windowTitle} toggleProp={toggleWindow} typeProp={inventoryType}/>
               <div
                 className="relative min-h-128 bg-bg_pet bg-center bg-no-repeat 
                   flex justify-center items-center w-full"
@@ -150,16 +154,16 @@ export default function Page() {
                 </div>
 
               <div className="flex space-x-4 mt-4 md:mt-0">
-                <button className="bg-green-500 text-white px-4 py-2 rounded-md" onClick={() => {toggleWindow("Actions and Toys"); playWithPet();}}>
+                <button className="bg-green-500 text-white px-4 py-2 rounded-md" onClick={() => {toggleWindow("Actions and Toys", "toys"); playWithPet();}}>
                     Interact
                 </button>
-                <button className="bg-red-500 text-white px-4 py-2 rounded-md" onClick={() => {toggleWindow("Food"); feedPet();}}>
+                <button className="bg-red-500 text-white px-4 py-2 rounded-md" onClick={() => {toggleWindow("Food", "food"); feedPet();}}>
                     Feed
                 </button>
-                <button className="bg-yellow-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Inventory")}>
+                <button className="bg-yellow-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Inventory", "costume")}>
                     Inventory
                 </button>
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Pets")}>
+                <button className="bg-blue-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Pets", "pet")}>
                     Switch Pet
                 </button>
               </div>
