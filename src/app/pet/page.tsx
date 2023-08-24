@@ -22,6 +22,10 @@ export default function Page() {
   const [currentPet, setCurrentPet] = useState("sprite");
 
   // Inventory related states
+  const [ownedToy, setOwnedToy] = useState([]);
+  const [ownedFood, setOwnedFood] = useState([]);
+  const [ownedCostume, setOwnedCostume] = useState([]);
+  const [ownedPet, setOwnedPet] = useState([]);
 
   // UI related states
   const [isWindowVisible, setWindowVisible] = useState(false);
@@ -69,7 +73,6 @@ export default function Page() {
     } else {
       clearInterval(interval);
     }
-
     return () => clearInterval(interval);
   }, [direction]);
 
@@ -165,6 +168,9 @@ export default function Page() {
                 </button>
                 <button className="bg-blue-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Pets", "pet")}>
                     Switch Pet
+                </button>
+                <button className="bg-indigo-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Shop", "shop")}>
+                    Shop
                 </button>
               </div>
             </div>

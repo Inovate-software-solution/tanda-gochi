@@ -40,6 +40,9 @@ const Inventory = (props) => {
                 >
                     <div className="flex items-center justify-between">
                         <h2 className="text-2xl mb-4">{props.titleProp}</h2>
+                        {props.typeProp === "shop" && (
+                            <h3 className="mb-4">Coins: Placeholder</h3>
+                        )}
                         <button className="bg-pink-500 text-white px-3 rounded-md" onClick={props.toggleProp}>Close</button>
                     </div>
                     <div className="p-4 overflow-y-auto h-96">
