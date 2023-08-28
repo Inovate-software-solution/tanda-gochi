@@ -77,7 +77,7 @@ jobs:
     - name: SSH and Deploy
       run: |
         ssh -i ~/.ssh/DeployKey capstone@${{ secrets.SERVER_IP }} << 'ENDSSH'
-        /home/capstone/CapstoneProjects/DeployScript.sh
+        bash /home/capstone/CapstoneProjects/DeployScriptApp.sh
         ENDSSH
 
     
