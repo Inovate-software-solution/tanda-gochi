@@ -158,16 +158,16 @@ export default function Page() {
 
               <div className="flex space-x-4 mt-4 md:mt-0">
                 <button className="bg-green-500 text-white px-4 py-2 rounded-md" onClick={() => {toggleWindow("Actions and Toys", "toys"); playWithPet();}}>
-                    Interact
+                    Toys
                 </button>
                 <button className="bg-red-500 text-white px-4 py-2 rounded-md" onClick={() => {toggleWindow("Food", "food"); feedPet();}}>
-                    Feed
+                    Food
                 </button>
                 <button className="bg-yellow-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Inventory", "costume")}>
-                    Inventory
+                    Costumes
                 </button>
                 <button className="bg-blue-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Pets", "pet")}>
-                    Switch Pet
+                    Pets
                 </button>
                 <button className="bg-indigo-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Shop", "shop")}>
                     Shop
