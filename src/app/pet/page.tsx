@@ -13,8 +13,9 @@ const WalkingAnimation: React.FC = () => {
   const [isEating, setIsEating] = useState(false); 
   const step = 1;
 
+  
   const animateWalking = () => {
-    if (isDancing || isEating) return;
+    if (!(isDancing || isEating)){
 
     const newPositionX = positionX + step * direction;
 
@@ -27,7 +28,7 @@ const WalkingAnimation: React.FC = () => {
       setCurrentLocation(newPositionX);
     }
 
-    requestAnimationFrame(animateWalking);
+    requestAnimationFrame(animateWalking);}
   };
 
   const startAutoDance = () => {
@@ -45,8 +46,11 @@ const WalkingAnimation: React.FC = () => {
     setTimeout(() => {
       setIsEating(false);
       setIsDancing(false);
+      setDirection(1);
+     
+      
       requestAnimationFrame(animateWalking);
-    }, 3000); // Eat animation lasts for 3 seconds
+    }, 3000); 
   };
 
   useEffect(() => {
