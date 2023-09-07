@@ -238,6 +238,28 @@ const Page: React.FC = () => {
                       </button>
                   </div>
               </div>
+
+              {/* <div className="grid grid-cols-3  ">
+                {sections.map((section, sectionIndex) => (
+                  <div key={sectionIndex} className="bg-blue-100 p-4 rounded-lg">
+                    <h2 className="text-xl font-semibold mb-2">{section.title}</h2>
+                    <div className="grid grid-cols-3 gap-2">
+                      {section.data.map((item, itemIndex) => (
+                        <div key={itemIndex} className="bg-white p-2 rounded-md">
+                          {item.image && (
+                            <img src={item.image} alt={item.name} />
+                          )}
+                          <p className="text-sm mt-1">{item.name}</p>
+                        </div>
+                      ))}
+                      
+                      {section.data.length < 9 && [...Array(9 - section.data.length)].map((_, emptyIndex) => (
+                        <div key={`empty-${emptyIndex}`} className="bg-white p-2 rounded-md" />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div> */}
             </div>
           </main>
       </Sidebar>
