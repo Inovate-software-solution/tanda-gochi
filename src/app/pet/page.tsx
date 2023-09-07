@@ -4,22 +4,31 @@ import Sidebar from "../../../components/Info/Sidebar";
 import Header from "../../../components/Info/Header";
 import Inventory from "../../../components/Pet/Inventory";
 
-import foxGif from "./fox.gif";
-import dodoGif from "./dodobirf.gif"
-import standSprite0 from "./sprite_0.png";
-import standSprite1 from "./sprite_1.png";
-import moveRightSprite4 from "./sprite_4.png";
-import moveRightSprite5 from "./sprite_5.png";
-import badgeImage from './badge.png';
+// Henry
+import rightwalkingImage from "../walk.gif";
+import leftwalkingImage from "../walkleft.gif";
+import addOilImage from "../addoil.gif";
+import eatImage from "../eat.gif";
+import walkImageWithHat from "../walkhat.gif";
+import walkLeftImageWithHat from "../walklefthat.gif";
+import wearHatImage from "../wearhat.gif";
 import Image from "next/image";
 
-export default function Page() {
-  // Pet related states
+const Page: React.FC = () => {
+  // Pet interaction related states
   const [happiness, setHappiness] = useState(50);
   const [fullness, setFullness] = useState(50);
-  const [position, setPosition] = useState(0);
-  const [direction, setDirection] = useState("stand");
-  const [currentPet, setCurrentPet] = useState("sprite");
+  //const [currentPet, setCurrentPet] = useState(50);
+
+  // Pet animation related states
+  const [positionX, setPositionX] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [isDancing, setIsDancing] = useState(false);
+  const [isEating, setIsEating] = useState(false); 
+  const [isHat, setHat] = useState(false);
+  const [isWearingHat, setIsWearingHat] = useState(false);
+  
+  const step = 1;
 
   // Inventory related states
   const [ownedToy, setOwnedToy] = useState([]);
@@ -32,6 +41,99 @@ export default function Page() {
   const [windowTitle, setWindowTitle] = useState("");
   const [inventoryType, setInventoryType] = useState("");
 
+  const toggleWearingHat = () => {
+    setHat(!isHat);
+  };
+  
+  const animateWalking = () => {
+    if (!(isDancing || isEating||isWearingHat)) {
+      const newPositionX = positionX + step * direction;
+      console.log("x:", positionX); 
+
+      if (newPositionX >= 250) {
+        setDirection(-1);
+        setPositionX(newPositionX);
+        console.log("left:", positionX); 
+      } else if (newPositionX <=-10) {
+        setDirection(1);
+        setPositionX(newPositionX);
+        console.log("right:", positionX); 
+      } else {
+        setPositionX(newPositionX);
+        console.log("isEating:", positionX); 
+      }
+    }
+  };
+
+  const startAutoDance = () => {
+    setIsDancing(true);
+    setTimeout(() => {
+      setIsDancing(false);
+      setIsEating(false);
+    }, 2000);
+  };
+
+  const startWearHatAnimation = () => {
+    if(isHat==false){setIsWearingHat(true);};
+    setTimeout(() => {
+      setIsDancing(false);
+      setIsEating(false);
+      setIsWearingHat(false);
+      toggleWearingHat();
+     
+    }, 1000);
+  };
+
+  const startEatAnimation = () => {
+    setIsEating(true);
+    setTimeout(() => {
+      setIsEating(false);
+      setIsDancing(false);
+      setDirection(1);
+    requestAnimationFrame(animateWalking);
+    }, 4000); 
+  };
+
+  const sections = [
+    {
+      title: 'Toys',
+      data: [
+        { image: 'toy_image_1.jpg', name: 'Toy 1' },
+        { image: 'toy_image_2.jpg', name: 'Toy 2' },
+        // Add more toy data here...
+      ],
+    },
+    {
+      title: 'Food',
+      data: [
+        { image: 'food_image_1.jpg', name: 'Food 1' },
+        { image: 'food_image_2.jpg', name: 'Food 2' },
+        // Add more food data here...
+      ],
+    },
+    {
+      title: 'Shop',
+      data: [
+        { image: 'shop_image_1.jpg', name: 'Shop 1' },
+        { image: 'shop_image_2.jpg', name: 'Shop 2' },
+        // Add more shop data here...
+      ],
+    },
+  ];
+
+  useEffect(() => {
+    const animationId = requestAnimationFrame(animateWalking);
+
+    const autoDanceInterval = setInterval(() => {
+      startAutoDance();
+    }, 2000);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      clearInterval(autoDanceInterval);
+    };
+  }, [positionX, direction, isDancing, isEating, isWearingHat]);
+
   const feedPet = () => {
     setFullness((prevFullness) => (prevFullness < 90 ? prevFullness + 10 : 100));
   };
@@ -40,9 +142,9 @@ export default function Page() {
     setHappiness((prevHappiness) => (prevHappiness < 90 ? prevHappiness + 10 : 100));
   };
 
-  const switchPet = () => {
-    setCurrentPet((prevPet) => (prevPet === "sprite" ? "gif" : "sprite"));
-  };
+  // const switchPet = () => {
+  //   setCurrentPet((prevPet) => (prevPet === "sprite" ? "gif" : "sprite"));
+  // };
 
   const toggleWindow = (title = "", type = "") => {
     setWindowTitle(title);
@@ -60,37 +162,6 @@ export default function Page() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    let interval;
-    if (direction === "right") {
-      interval = setInterval(() => {
-        setPosition((prevPosition) => (prevPosition + 1) % 3);
-      }, 1000); // Adjust the interval duration to control the speed of movement
-    } else if (direction === "left") {
-      interval = setInterval(() => {
-        setPosition((prevPosition) => (prevPosition - 1 + 3) % 3);
-      }, 1000); // Adjust the interval duration to control the speed of movement
-    } else {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [direction]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const random = Math.random();
-      if (random < 0.33) {
-        setDirection("stand");
-      } else if (random < 0.67) {
-        setDirection("right");
-      } else {
-        setDirection("left");
-      }
-    }, 3000); // Adjust the interval duration to control the frequency of direction changes
-
-    return () => clearInterval(timer);
-  }, []);
-
   return (
     <div>
       <Sidebar>
@@ -99,45 +170,63 @@ export default function Page() {
           <div className="flex flex-col justify-center items-center h-full">
             <div className="relative bg-bg_pet bg-center bg-no-repeat flex justify-center items-center w-full" style={{ height: '50vh' }}>
               <Inventory visibilityProp={isWindowVisible} titleProp={windowTitle} toggleProp={toggleWindow} typeProp={inventoryType}/>
-              <div
-                className="relative min-h-128 bg-bg_pet bg-center bg-no-repeat 
-                  flex justify-center items-center w-full"
-                style={{ height: '50vh' }}
-              >
-                <div className="relative flex justify-center items-center"
-                  style={{
-                    position: "absolute",
-                    left: `${position * 96}px`,
-                    top: "60%",
-                    width: "48px",
-                    height: "48px",
-                    transform: direction === "left" ? "scaleX(-1)" : "scaleX(1)",
-                  }}
-                >
-                  {currentPet === "sprite" ? (
-                    <Image
-                      src={
-                        direction === "stand"
-                          ? position === 0
-                            ? standSprite0
-                            : standSprite1
-                          : position === 0
-                          ? moveRightSprite4
-                          : moveRightSprite5
-                      }
-                      alt="Virtual Pet Sprite"
-                      layout="fill"
-                      objectFit="contain"
-                    />
-                  ) : (
-                    <Image src={dodoGif} alt="Virtual Pet GIF" style={{ width: "64px", height: "64px" }} />
-                  )}
-                  <div className="absolute mt-2">
-                    {/* <Image src={badgeImage} alt="testing badge" style={{ width: "16px", height: "16px"}}/> */}
+            </div>
+
+            <div style={{ position: "relative", width: "100vw", height: "50vh", overflow: "hidden" }}>
+            <div style={{ width: "500px", height: "500px", position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", border: "1px solid black" }}>
+              <img
+                src={
+                  isEating
+                    ? eatImage.src
+                    : isDancing
+                    ? addOilImage.src
+                    : isWearingHat
+                    ? wearHatImage.src
+                    : isHat
+                    ? direction === 1
+                      ? walkImageWithHat.src
+                      : walkLeftImageWithHat.src
+                    : direction === 1
+                    ? rightwalkingImage.src
+                    : leftwalkingImage.src
+                }
+                alt={
+                  isEating
+                    ? "Eating Image"
+                    : isDancing
+                    ? "Dancing Image"
+                    : isWearingHat
+                    ? "Wearing Hat Image"
+                    : isHat
+                    ? "Hat Walking Image"
+                    : "Walking Image"
+                }
+                style={{ position: "relative", top: "50%", left: positionX + "px", transform: "translateY(-50%)", width: "100px" }}
+              />
+            </div>
+          </div>
+{/* Box Sections */}
+      <div className="grid grid-cols-3  ">
+          {sections.map((section, sectionIndex) => (
+            <div key={sectionIndex} className="bg-blue-100 p-4 rounded-lg">
+              <h2 className="text-xl font-semibold mb-2">{section.title}</h2>
+              <div className="grid grid-cols-3 gap-2">
+                {section.data.map((item, itemIndex) => (
+                  <div key={itemIndex} className="bg-white p-2 rounded-md">
+                    {item.image && (
+                      <img src={item.image} alt={item.name} />
+                    )}
+                    <p className="text-sm mt-1">{item.name}</p>
                   </div>
-                </div>
+                ))}
+                {/* Add empty boxes if there's no data */}
+                {section.data.length < 9 && [...Array(9 - section.data.length)].map((_, emptyIndex) => (
+                  <div key={`empty-${emptyIndex}`} className="bg-white p-2 rounded-md" />
+                ))}
               </div>
-              </div>
+            </div>
+          ))}
+        </div>
 
             <div className="flex flex-col md:flex-row justify-between w-full md:w-3/4 lg:w-1/2 mt-4 p-4 space-y-4 md:space-y-0 md:space-x-4">
                 <div className="w-full md:w-1/3">
@@ -180,3 +269,5 @@ export default function Page() {
     </div>
   );
 }
+
+export default Page;
