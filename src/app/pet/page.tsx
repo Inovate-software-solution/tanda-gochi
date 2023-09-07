@@ -96,11 +96,11 @@ const WalkingAnimation: React.FC = () => {
       
     }, 4000); 
   };
-  const sections = [
+  const [sections, setSections] = useState([
     {
       title: 'Toys',
       data: [
-        { image: 'toy_image_1.jpg', name: 'Toy 1' },
+        { image: Image.src, name: 'Toy 1' },
         { image: 'toy_image_2.jpg', name: 'Toy 2' },
         // Add more toy data here...
       ],
@@ -108,9 +108,9 @@ const WalkingAnimation: React.FC = () => {
     {
       title: 'Food',
       data: [
-        { image: 'food_image_1.jpg', name: 'Food 1' },
+        { image: Image.src, name: 'Food 1' },
         { image: 'food_image_2.jpg', name: 'Food 2' },
-
+        // Add more food data here...
       ],
     },
     {
@@ -121,7 +121,7 @@ const WalkingAnimation: React.FC = () => {
         // Add more shop data here...
       ],
     },
-  ];
+  ]);
 
   
   // Create state to keep track of clicked items
@@ -141,25 +141,38 @@ const WalkingAnimation: React.FC = () => {
     };
   }, [positionX, direction, isDancing, isEating, isWearingHat]);
   // Create state to keep track of the current section
-  const [section, setSection] = useState(sections[0]);
+  
 
-  // Function to handle clicking on a photo
   const handleItemClick = (itemName: string) => {
-    if (section.data.find((item) => item.name === itemName)) {
-      // If the clicked item exists in the current section's data
-      // Remove the item from the section's data
-      const updatedData = section.data.filter((item) => item.name !== itemName);
-      setSection({ ...section, data: updatedData });
-
-      // Start the eat animation for 3 seconds
+    // Check if the item has already been clicked
+    if (!clickedItems.includes(itemName)) {
+      // Start the eat animation
       startEatAnimation();
+  
+      // After a delay, change the image and prevent further clicks on this item
       setTimeout(() => {
-        // After 3 seconds, add the item back to the section's data
-        setSection({ ...section, data: [...updatedData, { name: itemName, image: item.image }] });
-      }, 3000);
+        setSections((prevSections) =>
+          prevSections.map((section) => {
+            return {
+              ...section,
+              data: section.data.map((item) => {
+                if (item.name === itemName) {
+                  return {
+                    ...item,
+                    image: 'new_image.jpg', // Change to the new image URL
+                  };
+                }
+                return item;
+              }),
+            };
+          })
+        );
+  
+        // Add the item to the clicked items list
+        setClickedItems((prevClickedItems) => [...prevClickedItems, itemName]);
+      }, 3000); // Adjust the delay as needed (3 seconds in this example)
     }
   };
-
   return (
     <Sidebar>
       <main className="bg-gray-100 min-h-screen p-4">
