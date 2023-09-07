@@ -110,7 +110,7 @@ const WalkingAnimation: React.FC = () => {
       data: [
         { image: 'food_image_1.jpg', name: 'Food 1' },
         { image: 'food_image_2.jpg', name: 'Food 2' },
-        // Add more food data here...
+
       ],
     },
     {
@@ -123,6 +123,11 @@ const WalkingAnimation: React.FC = () => {
     },
   ];
 
+  
+  // Create state to keep track of clicked items
+  const [clickedItems, setClickedItems] = useState<string[]>([]);
+
+  
   useEffect(() => {
     const animationId = requestAnimationFrame(animateWalking);
 
@@ -135,6 +140,25 @@ const WalkingAnimation: React.FC = () => {
       clearInterval(autoDanceInterval);
     };
   }, [positionX, direction, isDancing, isEating, isWearingHat]);
+  // Create state to keep track of the current section
+  const [section, setSection] = useState(sections[0]);
+
+  // Function to handle clicking on a photo
+  const handleItemClick = (itemName: string) => {
+    if (section.data.find((item) => item.name === itemName)) {
+      // If the clicked item exists in the current section's data
+      // Remove the item from the section's data
+      const updatedData = section.data.filter((item) => item.name !== itemName);
+      setSection({ ...section, data: updatedData });
+
+      // Start the eat animation for 3 seconds
+      startEatAnimation();
+      setTimeout(() => {
+        // After 3 seconds, add the item back to the section's data
+        setSection({ ...section, data: [...updatedData, { name: itemName, image: item.image }] });
+      }, 3000);
+    }
+  };
 
   return (
     <Sidebar>
@@ -198,24 +222,34 @@ const WalkingAnimation: React.FC = () => {
           {/* Inventory */}
           {/* <Inventory visibilityProp={isWindowVisible} titleProp={windowTitle} toggleProp={toggleWindow} typeProp={inventoryType} /> */}
   
-{/* Box Sections */}
-<div className="grid grid-cols-3  ">
-          {sections.map((section, sectionIndex) => (
-            <div key={sectionIndex} className="bg-blue-100 p-4 rounded-lg">
-              <h2 className="text-xl font-semibold mb-2">{section.title}</h2>
-              <div className="grid grid-cols-3 gap-2">
-                {section.data.map((item, itemIndex) => (
-                  <div key={itemIndex} className="bg-white p-2 rounded-md">
-                    {item.image && (
-                      <img src={item.image} alt={item.name} />
-                    )}
-                    <p className="text-sm mt-1">{item.name}</p>
-                  </div>
-                ))}
-                {/* Add empty boxes if there's no data */}
-                {section.data.length < 9 && [...Array(9 - section.data.length)].map((_, emptyIndex) => (
-                  <div key={`empty-${emptyIndex}`} className="bg-white p-2 rounded-md" />
-                ))}
+          {/* Box Sections */}
+          <div className="grid grid-cols-3">
+            {sections.map((section, sectionIndex) => (
+              <div key={sectionIndex} className="bg-blue-100 p-4 rounded-lg">
+                <h2 className="text-xl font-semibold mb-2">{section.title}</h2>
+                <div className="grid grid-cols-3 gap-2">
+                  {section.data.map((item, itemIndex) => (
+                    <div
+                      key={itemIndex}
+                      className={`bg-white p-2 rounded-md ${
+                        clickedItems.includes(item.name) ? 'hidden' : ''
+                      }`} // Use CSS to hide the item if it's in the clickedItems array
+                    >
+                      {/* Make the photo clickable */}
+                      <button
+                        onClick={() => handleItemClick(item.name)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {item.image && <img src={item.image} alt={item.name} />}
+                      </button>
+                      <p className="text-sm mt-1">{item.name}</p>
+                    </div>
+                  ))}
+                  {/* Add empty boxes if there's no data */}
+                  {section.data.length < 9 &&
+                    [...Array(9 - section.data.length)].map((_, emptyIndex) => (
+                      <div key={`empty-${emptyIndex}`} className="bg-white p-2 rounded-md" />
+                    ))}
               </div>
             </div>
           ))}
