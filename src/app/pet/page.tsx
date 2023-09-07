@@ -11,6 +11,7 @@ import eatImage from "../eat.gif";
 import walkImageWithHat from "../walkhat.gif";
 import walkLeftImageWithHat from "../walklefthat.gif";
 import wearHatImage from "../wearhat.gif";
+import Image from "../food.jpg";
 
 const WalkingAnimation: React.FC = () => {
   const [positionX, setPositionX] = useState(0);
@@ -95,6 +96,32 @@ const WalkingAnimation: React.FC = () => {
       
     }, 4000); 
   };
+  const sections = [
+    {
+      title: 'Toys',
+      data: [
+        { image: 'toy_image_1.jpg', name: 'Toy 1' },
+        { image: 'toy_image_2.jpg', name: 'Toy 2' },
+        // Add more toy data here...
+      ],
+    },
+    {
+      title: 'Food',
+      data: [
+        { image: 'food_image_1.jpg', name: 'Food 1' },
+        { image: 'food_image_2.jpg', name: 'Food 2' },
+        // Add more food data here...
+      ],
+    },
+    {
+      title: 'Shop',
+      data: [
+        { image: 'shop_image_1.jpg', name: 'Shop 1' },
+        { image: 'shop_image_2.jpg', name: 'Shop 2' },
+        // Add more shop data here...
+      ],
+    },
+  ];
 
   useEffect(() => {
     const animationId = requestAnimationFrame(animateWalking);
@@ -112,8 +139,6 @@ const WalkingAnimation: React.FC = () => {
   return (
     <Sidebar>
       <main className="bg-gray-100 min-h-screen p-4">
-        
-        
         <div className="relative bg-bg_pet bg-center bg-no-repeat flex flex-col items-center w-full">
           {/* Pet Image */}
           <div style={{ position: "relative", width: "100vw", height: "50vh", overflow: "hidden" }}>
@@ -124,9 +149,9 @@ const WalkingAnimation: React.FC = () => {
                     ? eatImage.src
                     : isDancing
                     ? addOilImage.src
-                    :isWearingHat
-                    ?wearHatImage.src
-                    :isHat
+                    : isWearingHat
+                    ? wearHatImage.src
+                    : isHat
                     ? direction === 1
                       ? walkImageWithHat.src
                       : walkLeftImageWithHat.src
@@ -151,7 +176,7 @@ const WalkingAnimation: React.FC = () => {
           </div>
           
           {/* Buttons */}
-          <div className="flex space-x-4 mt-4 md:mt-0">
+          {/* <div className="flex space-x-4 mt-4 md:mt-0">
             <button className="bg-green-500 text-white px-4 py-2 rounded-md" onClick={() => {toggleWindow("Actions and Toys", "toys"); }}>
               Toys
             </button>
@@ -162,17 +187,39 @@ const WalkingAnimation: React.FC = () => {
               Costumes
             </button>
             <button className="bg-blue-500 text-white px-4 py-2 rounded-md" onClick={() => { startEatAnimation(); setIsDancing(false); }}>Eat and Stop</button>
-             
             <button className="bg-indigo-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Shop", "shop")}>
               Shop
             </button>
             <button className="bg-purple-500 text-white px-4 py-2 rounded-md" onClick={() => { startWearHatAnimation(); }}>
-    Wear
-  </button>
-          </div>
+              Wear
+            </button>
+          </div> */}
           
           {/* Inventory */}
-          <Inventory visibilityProp={isWindowVisible} titleProp={windowTitle} toggleProp={toggleWindow} typeProp={inventoryType} />
+          {/* <Inventory visibilityProp={isWindowVisible} titleProp={windowTitle} toggleProp={toggleWindow} typeProp={inventoryType} /> */}
+  
+{/* Box Sections */}
+<div className="grid grid-cols-3  ">
+          {sections.map((section, sectionIndex) => (
+            <div key={sectionIndex} className="bg-blue-100 p-4 rounded-lg">
+              <h2 className="text-xl font-semibold mb-2">{section.title}</h2>
+              <div className="grid grid-cols-3 gap-2">
+                {section.data.map((item, itemIndex) => (
+                  <div key={itemIndex} className="bg-white p-2 rounded-md">
+                    {item.image && (
+                      <img src={item.image} alt={item.name} />
+                    )}
+                    <p className="text-sm mt-1">{item.name}</p>
+                  </div>
+                ))}
+                {/* Add empty boxes if there's no data */}
+                {section.data.length < 9 && [...Array(9 - section.data.length)].map((_, emptyIndex) => (
+                  <div key={`empty-${emptyIndex}`} className="bg-white p-2 rounded-md" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
         </div>
       </main>
     </Sidebar>
