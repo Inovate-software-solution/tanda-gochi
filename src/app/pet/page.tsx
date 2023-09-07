@@ -1,17 +1,16 @@
 "use client";
 
-
-import Sidebar from "../../../components/Sidebar";
+import Sidebar from "../../../components/Info/Sidebar";
 import Inventory from "../../../components/Pet/Inventory";
 import React, { useEffect, useState } from "react";
-import rightwalkingImage from "../walk.gif";
-import leftwalkingImage from "../walkleft.gif";
-import addOilImage from "../addoil.gif";
-import eatImage from "../eat.gif";
-import walkImageWithHat from "../walkhat.gif";
-import walkLeftImageWithHat from "../walklefthat.gif";
-import wearHatImage from "../wearhat.gif";
-import Image from "../food.jpg";
+import rightwalkingImage from "../../../public/images/walk.gif";
+import leftwalkingImage from "../../../public/images/walkleft.gif";
+import addOilImage from "../../../public/images/addoil.gif";
+import eatImage from "../../../public/images/eat.gif";
+import walkImageWithHat from "../../../public/images/walkhat.gif";
+import walkLeftImageWithHat from "../../../public/images/walklefthat.gif";
+import wearHatImage from "../../../public/images/wearhat.gif";
+import Image from "../../../public/images/food.jpg";
 
 const Page: React.FC = () => {
   // Pet interaction related states
@@ -269,4 +268,4 @@ const Page: React.FC = () => {
   );
 }
 
-   export default Page;
+export default Page;

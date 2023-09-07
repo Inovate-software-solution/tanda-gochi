@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Success from "@/public/images/check-green.gif";
 import Failed from "@/public/images/error-img.gif";
 import TandaLogo from "@/components/General/TandaLogo";
