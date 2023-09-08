@@ -1,17 +1,18 @@
 "use client";
 
-import Sidebar from "../../../components/Info/Sidebar";
-import Inventory from "../../../components/Pet/Inventory";
+import Sidebar from "@/components/Info/Sidebar";
+import Inventory from "@/components/Pet/Inventory";
 import React, { useEffect, useState } from "react";
-import rightwalkingImage from "../walk.gif";
-import leftwalkingImage from "../walkleft.gif";
-import addOilImage from "../addoil.gif";
-import eatImage from "../eat.gif";
-import walkImageWithHat from "../walkhat.gif";
-import walkLeftImageWithHat from "../walklefthat.gif";
-import wearHatImage from "../wearhat.gif";
+import rightwalkingImage from "@/public/images/walk.gif";
+import leftwalkingImage from "@/public/images/walkleft.gif";
+import addOilImage from "@/public/images/addoil.gif";
+import eatImage from "@/public/images/eat.gif";
+import walkImageWithHat from "@/public/images/walkhat.gif";
+import walkLeftImageWithHat from "@/public/images/walklefthat.gif";
+import wearHatImage from "@/public/images/wearhat.gif";
 
-  // Pet animation related states
+const Page: React.FC = () => {
+    // Pet animation related states
   const [positionX, setPositionX] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isDancing, setIsDancing] = useState(false);
@@ -98,14 +99,6 @@ import wearHatImage from "../wearhat.gif";
     };
   }, [positionX, direction, isDancing, isEating, isWearingHat]);
 
-  const feedPet = () => {
-    setFullness((prevFullness) => (prevFullness < 90 ? prevFullness + 10 : 100));
-  };
-
-  const playWithPet = () => {
-    setHappiness((prevHappiness) => (prevHappiness < 90 ? prevHappiness + 10 : 100));
-  };
-
   // const switchPet = () => {
   //   setCurrentPet((prevPet) => (prevPet === "sprite" ? "gif" : "sprite"));
   // };
@@ -115,22 +108,10 @@ import wearHatImage from "../wearhat.gif";
     setWindowVisible(!isWindowVisible);
     setInventoryType(type);
   };
-  
-  // decrement happiness and fullness
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHappiness((prevHappiness) => (prevHappiness > 10 ? prevHappiness - 10 : 0));
-      setFullness((prevFullness) => (prevFullness > 10 ? prevFullness - 10 : 0));
-    }, 3600000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <Sidebar>
       <main className="bg-gray-100 min-h-screen p-4">
-        
-        
         <div className="relative bg-bg_pet bg-center bg-no-repeat flex flex-col items-center w-full">
           {/* Pet Image */}
           <div style={{ position: "relative", width: "100vw", height: "50vh", overflow: "hidden" }}>
@@ -184,8 +165,8 @@ import wearHatImage from "../wearhat.gif";
               Shop
             </button>
             <button className="bg-purple-500 text-white px-4 py-2 rounded-md" onClick={() => { startWearHatAnimation(); }}>
-    Wear
-  </button>
+              Wear
+            </button>
           </div>
           
           {/* Inventory */}
