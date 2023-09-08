@@ -1,19 +1,18 @@
 "use client";
 
-
-import Sidebar from "../../../components/Sidebar";
-import Inventory from "../../../components/Pet/Inventory";
+import Sidebar from "@/components/Info/Sidebar";
+import Inventory from "@/components/Pet/Inventory";
 import React, { useEffect, useState } from "react";
-import rightwalkingImage from "../walk.gif";
-import leftwalkingImage from "../walkleft.gif";
-import addOilImage from "../addoil.gif";
-import eatImage from "../eat.gif";
-import walkImageWithHat from "../walkhat.gif";
-import walkLeftImageWithHat from "../walklefthat.gif";
-import wearHatImage from "../wearhat.gif";
-import Image from "../food.jpg";
+import rightwalkingImage from "@/public/images/walk.gif";
+import leftwalkingImage from "@/public/images/walkleft.gif";
+import addOilImage from "@/public/images/addoil.gif";
+import eatImage from "@/public/images/eat.gif";
+import walkImageWithHat from "@/public/images/walkhat.gif";
+import walkLeftImageWithHat from "@/public/images/walklefthat.gif";
+import wearHatImage from "@/public/images/wearhat.gif";
 
-const WalkingAnimation: React.FC = () => {
+const Page: React.FC = () => {
+    // Pet animation related states
   const [positionX, setPositionX] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isDancing, setIsDancing] = useState(false);
@@ -22,6 +21,14 @@ const WalkingAnimation: React.FC = () => {
   const [isWearingHat, setIsWearingHat] = useState(false);
   
   const step = 1;
+
+  // Inventory related states
+  const [ownedToy, setOwnedToy] = useState([]);
+  const [ownedFood, setOwnedFood] = useState([]);
+  const [ownedCostume, setOwnedCostume] = useState([]);
+  const [ownedPet, setOwnedPet] = useState([]);
+
+  // UI related states
   const [isWindowVisible, setWindowVisible] = useState(false);
   const [windowTitle, setWindowTitle] = useState("");
   const [inventoryType, setInventoryType] = useState("");
@@ -29,71 +36,53 @@ const WalkingAnimation: React.FC = () => {
   const toggleWearingHat = () => {
     setHat(!isHat);
   };
-
-  const toggleWindow = (title = "", type = "") => {
-    setWindowTitle(title);
-    setWindowVisible(!isWindowVisible);
-    setInventoryType(type);
-  };
   
-    const animateWalking = () => {
-  
+  const animateWalking = () => {
+    if (!(isDancing || isEating||isWearingHat)) {
+      const newPositionX = positionX + step * direction;
+      console.log("x:", positionX); 
 
-      if (!(isDancing || isEating||isWearingHat)) {
-    
-        const newPositionX = positionX + step * direction;
-        console.log("x:", positionX); 
-        if (newPositionX >= 250) {
-          setDirection(-1);
-          setPositionX(newPositionX);
-          console.log("left:", positionX); 
-        } else if (newPositionX <=-10) {
-          setDirection(1);
-          setPositionX(newPositionX);
-          console.log("right:", positionX); 
-        } else {
-          
-          setPositionX(newPositionX);
-          console.log("isEating:", positionX); 
-        }
-
-        
+      if (newPositionX >= 250) {
+        setDirection(-1);
+        setPositionX(newPositionX);
+        console.log("left:", positionX); 
+      } else if (newPositionX <=-10) {
+        setDirection(1);
+        setPositionX(newPositionX);
+        console.log("right:", positionX); 
+      } else {
+        setPositionX(newPositionX);
+        console.log("isEating:", positionX); 
       }
-    };
+    }
+  };
 
   const startAutoDance = () => {
     setIsDancing(true);
     setTimeout(() => {
       setIsDancing(false);
       setIsEating(false);
-      
     }, 2000);
-   
   };
-  const startWearHatAnimation = () => {
-      
-      if(isHat==false){setIsWearingHat(true);};
-      
 
-    
-    
-      setTimeout(() => {
-        setIsDancing(false);
-        setIsEating(false);
-        setIsWearingHat(false);
-        toggleWearingHat();
-       
+  const startWearHatAnimation = () => {
+    if(isHat==false){setIsWearingHat(true);};
+    setTimeout(() => {
+      setIsDancing(false);
+      setIsEating(false);
+      setIsWearingHat(false);
+      toggleWearingHat();
+     
     }, 1000);
   };
+
   const startEatAnimation = () => {
     setIsEating(true);
     setTimeout(() => {
       setIsEating(false);
       setIsDancing(false);
       setDirection(1);
-     requestAnimationFrame(animateWalking);
-      
-      
+    requestAnimationFrame(animateWalking);
     }, 4000); 
   };
   const [sections, setSections] = useState([
@@ -186,9 +175,9 @@ const WalkingAnimation: React.FC = () => {
                     ? eatImage.src
                     : isDancing
                     ? addOilImage.src
-                    : isWearingHat
-                    ? wearHatImage.src
-                    : isHat
+                    :isWearingHat
+                    ?wearHatImage.src
+                    :isHat
                     ? direction === 1
                       ? walkImageWithHat.src
                       : walkLeftImageWithHat.src
@@ -213,7 +202,7 @@ const WalkingAnimation: React.FC = () => {
           </div>
           
           {/* Buttons */}
-          {/* <div className="flex space-x-4 mt-4 md:mt-0">
+          <div className="flex space-x-4 mt-4 md:mt-0">
             <button className="bg-green-500 text-white px-4 py-2 rounded-md" onClick={() => {toggleWindow("Actions and Toys", "toys"); }}>
               Toys
             </button>
@@ -224,13 +213,14 @@ const WalkingAnimation: React.FC = () => {
               Costumes
             </button>
             <button className="bg-blue-500 text-white px-4 py-2 rounded-md" onClick={() => { startEatAnimation(); setIsDancing(false); }}>Eat and Stop</button>
+             
             <button className="bg-indigo-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Shop", "shop")}>
               Shop
             </button>
             <button className="bg-purple-500 text-white px-4 py-2 rounded-md" onClick={() => { startWearHatAnimation(); }}>
               Wear
             </button>
-          </div> */}
+          </div>
           
           {/* Inventory */}
           {/* <Inventory visibilityProp={isWindowVisible} titleProp={windowTitle} toggleProp={toggleWindow} typeProp={inventoryType} /> */}
@@ -273,7 +263,4 @@ const WalkingAnimation: React.FC = () => {
   );
 }
 
-
-export default WalkingAnimation;
-
-   
+export default Page;

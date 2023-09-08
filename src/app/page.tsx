@@ -1,27 +1,17 @@
 "use client";
 
-import React from "react";
-import { useState, useEffect } from "react";
-import logo from "../../public/images/TandaLogo.png";
-import Image from "next/image";
-import Success from "../../public/images/check-green.gif";
-import Failed from "../../public/images/error-img.gif";
+import React, { useState, useEffect } from "react";
+import Success from "@/public/images/check-green.gif";
+import Failed from "@/public/images/error-img.gif";
+import TandaLogo from "@/components/General/TandaLogo";
+import LiveTime from "@/components/General/LiveTime";
 
 export default function Home() {
-  const [currentTime, setCurrentTime] = useState("");
-  const [currentDate, setCurrentDate] = useState("");
   const [idText, setIdText] = useState("");
 
   const [clocking, setClocking] = useState(true);
   const [success, setSuccess] = useState(false);
   const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString());
-      setCurrentDate(new Date().toLocaleDateString());
-    });
-  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -37,27 +27,18 @@ export default function Home() {
       <div
         className={
           clocking
-            ? "min-h-screen w-full sm:min-h-0 rounded-none sm:w-[400px] sm:h-[650px] backdrop-blur-sm sm:rounded-3xl sm:items-start items-center flex justify-center bg-gray-800/90"
+            ? "min-h-screen w-full sm:min-h-0 rounded-none sm:w-[400px] sm:h-[650px] backdrop-blur-sm sm:rounded-3xl sm:items-start items-center flex justify-center bg-teritary-10/90"
             : "min-h-screen w-full sm:min-h-0 rounded-none sm:w-[400px] sm:h-[650px] backdrop-blur-sm sm:rounded-3xl sm:items-start items-center flex justify-center bg-white"
         }
       >
         {clocking ? (
           <div className="">
-            <div className="flex justify-center">
-              <div className="w-[120px] sm:w-[180px] mt-10">
-                <Image src={logo} alt="" priority />
-              </div>
+            <div className="flex justify-center mt-10">
+              <TandaLogo className="w-[120px] sm:w-[180px]" />
             </div>
 
-            <div className="flex justify-center mt-2">
-              <label className="text-white font-bold text-[24px]">
-                {currentTime}
-              </label>
-            </div>
-            <div className="flex justify-center">
-              <label className="text-white font-bold text-[24px]">
-                {currentDate}
-              </label>
+            <div className="mt-4">
+              <LiveTime labelClassName="text-white font-bold text-[24px]" />
             </div>
 
             <div className="flex justify-center m-4 text-[16px] sm:text-[24px] mt-2 px-6">
@@ -105,7 +86,7 @@ export default function Home() {
 
             <div className="m-4 flex justify-center">
               <button
-                className="bg-blue-400 text-[30px] px-8 rounded-full text-white"
+                className="bg-teritary-60 hover:bg-teritary-40 text-[30px] px-8 rounded-full text-white"
                 onClick={() => {
                   if (idText === "123456") {
                     setClocking(false);
@@ -120,7 +101,7 @@ export default function Home() {
                   }
                 }}
               >
-                clock
+                CLOCK
               </button>
             </div>
           </div>
@@ -141,7 +122,7 @@ export default function Home() {
 
             <div className="m-4 flex justify-center mt-20">
               <button
-                className="bg-blue-400 text-[30px] px-8 rounded-full text-white"
+                className="bg-teritary-60 hover:bg-teritary-40 text-[30px] px-8 rounded-full text-white"
                 onClick={() => {
                   setClocking(true);
                   setSuccess(false);
@@ -168,7 +149,7 @@ export default function Home() {
 
             <div className="m-4 flex justify-center mt-20">
               <button
-                className="bg-blue-400 text-[30px] px-8 rounded-full text-white"
+                className="bg-teritary-60 hover:bg-teritary-40 text-[30px] px-8 rounded-full text-white"
                 onClick={() => {
                   setClocking(true);
                   setSuccess(false);
