@@ -13,6 +13,7 @@ import wearHatImage from "../../../public/images/wearhat.gif";
 import Image from "../../../public/images/food.jpg";
 
 const Page: React.FC = () => {
+  
   // Pet interaction related states
   const [happiness, setHappiness] = useState(50);
   const [fullness, setFullness] = useState(50);
@@ -92,33 +93,7 @@ const Page: React.FC = () => {
     }, 4000); 
   };
 
-  const sections = [
-    {
-      title: 'Toys',
-      data: [
-        { image: 'toy_image_1.jpg', name: 'Toy 1' },
-        { image: 'toy_image_2.jpg', name: 'Toy 2' },
-        // Add more toy data here...
-      ],
-    },
-    {
-      title: 'Food',
-      data: [
-        { image: 'food_image_1.jpg', name: 'Food 1' },
-        { image: 'food_image_2.jpg', name: 'Food 2' },
-        // Add more food data here...
-      ],
-    },
-    {
-      title: 'Shop',
-      data: [
-        { image: 'shop_image_1.jpg', name: 'Shop 1' },
-        { image: 'shop_image_2.jpg', name: 'Shop 2' },
-        // Add more shop data here...
-      ],
-    },
-  ];
-
+  
   useEffect(() => {
     const animationId = requestAnimationFrame(animateWalking);
 
