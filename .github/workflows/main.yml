@@ -23,21 +23,13 @@ jobs:
       - name: Set up Node.js (latest LTS version)
         uses: actions/setup-node@v2
         with:
-          node-version: '18'
-
-      - name: Fetch the base branch (for pull requests)
-        if: github.event_name == 'pull_request'
-        run: git fetch origin ${{ github.base_ref }}
-
-      - name: Merge with base branch (for pull requests)
-        if: github.event_name == 'pull_request'
-        run: git merge FETCH_HEAD --no-commit --no-ff
+          node-version: '18.*'
 
       - name: Install Dependencies
         run: npm install
 
-      #- name: Run Tests
-       # run: npm test
+      - name: Run Tests
+        run: npm test
 
   build:
     needs: test
