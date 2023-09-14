@@ -11,19 +11,20 @@ import walkImageWithHat from "../../../public/images/walkhat.gif";
 import walkLeftImageWithHat from "../../../public/images/walklefthat.gif";
 import wearHatImage from "../../../public/images/wearhat.gif";
 import Image from "../../../public/images/food.jpg";
+import playImage from "@/public/images/playball.gif";
 
 const Page: React.FC = () => {
   
   // Pet interaction related states
   const [happiness, setHappiness] = useState(50);
   const [fullness, setFullness] = useState(50);
-  //const [currentPet, setCurrentPet] = useState(50);
 
   // Pet animation related states
   const [positionX, setPositionX] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isDancing, setIsDancing] = useState(false);
   const [isEating, setIsEating] = useState(false); 
+  const [isplaying, setIsplaying] = useState(false); 
   const [isHat, setHat] = useState(false);
   const [isWearingHat, setIsWearingHat] = useState(false);
   
@@ -47,19 +48,19 @@ const Page: React.FC = () => {
   const animateWalking = () => {
     if (!(isDancing || isEating||isWearingHat)) {
       const newPositionX = positionX + step * direction;
-      console.log("x:", positionX); 
+      //console.log("x:", positionX); 
 
       if (newPositionX >= 250) {
         setDirection(-1);
         setPositionX(newPositionX);
-        console.log("left:", positionX); 
+        //console.log("left:", positionX); 
       } else if (newPositionX <=-10) {
         setDirection(1);
         setPositionX(newPositionX);
-        console.log("right:", positionX); 
+        //console.log("right:", positionX); 
       } else {
         setPositionX(newPositionX);
-        console.log("isEating:", positionX); 
+        //console.log("isEating:", positionX); 
       }
     }
   };
@@ -79,7 +80,6 @@ const Page: React.FC = () => {
       setIsEating(false);
       setIsWearingHat(false);
       toggleWearingHat();
-     
     }, 1000);
   };
 
@@ -93,10 +93,33 @@ const Page: React.FC = () => {
     }, 4000); 
   };
 
+  const startplayAnimation = () => {
+    setIsplaying(true);
+    setTimeout(() => {
+      setIsEating(false);
+      setIsDancing(false);
+      setIsplaying(false);
+      setDirection(1);
+    requestAnimationFrame(animateWalking);
+    }, 4000); 
+  };
+
+  const feedPet = () => {
+    setFullness((prevFullness) => (prevFullness < 90 ? prevFullness + 10 : 100));
+  };
+
+  const playWithPet = () => {
+      setHappiness((prevHappiness) => (prevHappiness < 90 ? prevHappiness + 10 : 100));
+  };
+
+  const toggleWindow = (title = "", type = "") => {
+    setWindowTitle(title);
+    setWindowVisible(!isWindowVisible);
+    setInventoryType(type);
+  };
   
   useEffect(() => {
     const animationId = requestAnimationFrame(animateWalking);
-
     const autoDanceInterval = setInterval(() => {
       startAutoDance();
     }, 2000);
@@ -106,24 +129,6 @@ const Page: React.FC = () => {
       clearInterval(autoDanceInterval);
     };
   }, [positionX, direction, isDancing, isEating, isWearingHat]);
-
-  const feedPet = () => {
-    setFullness((prevFullness) => (prevFullness < 90 ? prevFullness + 10 : 100));
-  };
-
-  const playWithPet = () => {
-    setHappiness((prevHappiness) => (prevHappiness < 90 ? prevHappiness + 10 : 100));
-  };
-
-  // const switchPet = () => {
-  //   setCurrentPet((prevPet) => (prevPet === "sprite" ? "gif" : "sprite"));
-  // };
-
-  const toggleWindow = (title = "", type = "") => {
-    setWindowTitle(title);
-    setWindowVisible(!isWindowVisible);
-    setInventoryType(type);
-  };
   
   // decrement happiness and fullness
   useEffect(() => {
@@ -136,7 +141,7 @@ const Page: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <div className="overflow-x-hidden" data-theme="emerald">
       <Sidebar>
           <main className="bg-gray-100 min-h-screen p-4">
             <h1 className="text-4xl font-bold mb-4">Virtual Pet</h1>
@@ -148,18 +153,20 @@ const Page: React.FC = () => {
                     <img
                         src={
                             isEating
-                                ? eatImage.src
-                                : isDancing
-                                    ? addOilImage.src
-                                    : isWearingHat
-                                        ? wearHatImage.src
-                                        : isHat
-                                            ? direction === 1
-                                                ? walkImageWithHat.src
-                                                : walkLeftImageWithHat.src
-                                            : direction === 1
-                                                ? rightwalkingImage.src
-                                                : leftwalkingImage.src
+                            ? eatImage.src
+                            :isplaying
+                            ?playImage.src
+                            : isDancing
+                                ? addOilImage.src
+                                : isWearingHat
+                                    ? wearHatImage.src
+                                    : isHat
+                                        ? direction === 1
+                                            ? walkImageWithHat.src
+                                            : walkLeftImageWithHat.src
+                                        : direction === 1
+                                            ? rightwalkingImage.src
+                                            : leftwalkingImage.src
                         }
                         alt={
                             isEating
@@ -178,65 +185,36 @@ const Page: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row justify-between w-full md:w-3/4 lg:w-1/2 mt-4 p-4 space-y-4 md:space-y-0 md:space-x-4">
-                  <div className="w-full md:w-1/3">
-                      <p className="font-bold">Happiness</p>
-                      <div className="bg-gray-300 h-3 rounded-md w-32">
-                          <div className="bg-green-400 h-full rounded-md" style={{ width: `${happiness}%` }}></div>
-                      </div>
-                      <p className="text-xs mt-1">{happiness}%</p>
-                  </div>
-
-                  <div className="w-full md:w-1/3">
-                      <p className="font-bold">Fullness</p>
-                      <div className="bg-gray-300 h-3 rounded-md w-32">
-                          <div className="bg-red-400 h-full rounded-md" style={{ width: `${fullness}%` }}></div>
-                      </div>
-                      <p className="text-xs mt-1">{fullness}%</p>
-                  </div>
-
-                  <div className="flex space-x-4 mt-4 md:mt-0">
-                      <button className="bg-green-500 text-white px-4 py-2 rounded-md" onClick={() => { toggleWindow("Actions and Toys", "toys"); playWithPet(); }}>
-                          Toys
-                      </button>
-                      <button className="bg-red-500 text-white px-4 py-2 rounded-md" onClick={() => { toggleWindow("Food", "food"); feedPet(); }}>
-                          Food
-                      </button>
-                      <button className="bg-yellow-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Inventory", "costume")}>
-                          Costumes
-                      </button>
-                      <button className="bg-blue-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Pets", "pet")}>
-                          Pets
-                      </button>
-                      <button className="bg-indigo-500 text-white px-4 py-2 rounded-md" onClick={() => toggleWindow("Shop", "shop")}>
-                          Shop
-                      </button>
-                  </div>
+            <div className="navbar bg-base-100 flex flex-col md:flex-row justify-center items-center md:w-3/4 lg:w-1/3 xl:w-3/4 mt-2 md:mt-4  md:p-4">
+              <div className="w-full md:w-1/3">
+                <p className="font-bold mr-2">Happiness</p>
+                <progress className="progress progress-accent w-full md:w-2/3 lg:w-1/2 xl:w-56 mr-2" value={happiness} max="100"></progress>
+                <p className="text-xs mt-1">{happiness}%</p>
               </div>
 
-              {/* <div className="grid grid-cols-3  ">
-                {sections.map((section, sectionIndex) => (
-                  <div key={sectionIndex} className="bg-blue-100 p-4 rounded-lg">
-                    <h2 className="text-xl font-semibold mb-2">{section.title}</h2>
-                    <div className="grid grid-cols-3 gap-2">
-                      {section.data.map((item, itemIndex) => (
-                        <div key={itemIndex} className="bg-white p-2 rounded-md">
-                          {item.image && (
-                            <img src={item.image} alt={item.name} />
-                          )}
-                          <p className="text-sm mt-1">{item.name}</p>
-                        </div>
-                      ))}
-                      
-                      {section.data.length < 9 && [...Array(9 - section.data.length)].map((_, emptyIndex) => (
-                        <div key={`empty-${emptyIndex}`} className="bg-white p-2 rounded-md" />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div> */}
+              <div className="w-full md:w-1/3">
+                <p className="font-bold mr-2">Fullness</p>
+                <progress className="progress progress-success w-full md:w-2/3 lg:w-1/2 xl:w-56 mr-2" value={fullness} max="100"></progress>
+                <p className="text-xs mt-1">{fullness}%</p>
+              </div>
+
+              <div className="flex space-x-4 mt-4 md:mt-0">
+                  <button className="btn btn-info px-4 py-2 rounded-md" onClick={() => { toggleWindow("Actions and Toys", "toys"); playWithPet(); }}>
+                      Toys
+                  </button>
+                  <button className="btn btn-success px-4 py-2 rounded-md" onClick={() => { toggleWindow("Food", "food"); feedPet(); }}>
+                      Food
+                  </button>
+                  <button className="btn btn-warning px-4 py-2 rounded-md" onClick={() => toggleWindow("Inventory", "costume")}>
+                      Costumes
+                  </button>
+                  <button className="btn btn-error px-4 py-2 rounded-md" onClick={() => toggleWindow("Shop", "shop")}>
+                      Shop
+                  </button>
+              </div>
             </div>
-          </main>
+          </div>
+        </main>
       </Sidebar>
   </div>
   );

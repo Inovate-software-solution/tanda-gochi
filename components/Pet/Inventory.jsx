@@ -32,26 +32,55 @@ const Inventory = (props) => {
             setItems(type[props.typeProp]);
         }
         console.log(items);
-    }, [props.typeProp]);
-    // Function to start the eat animation
-    const startEatAnimation = () => {
-        setIsEating(true);
-        setTimeout(() => {
+        }, [props.typeProp]);
+        // Function to start the eat animation
+        const startEatAnimation = () => {
+            setIsEating(true);
+            setTimeout(() => {
             setIsEating(false);
         }, 2000); // Assuming the animation takes 2 seconds
     };
+
+    // <div className="grid grid-cols-3  ">
+    //     {sections.map((section, sectionIndex) => (
+    //         <div key={sectionIndex} className="bg-blue-100 p-4 rounded-lg">
+    //             <h2 className="text-xl font-semibold mb-2">{section.title}</h2>
+    //             <div className="grid grid-cols-3 gap-2">
+    //                 {section.data.map((item, itemIndex) => (
+    //                 <div key={itemIndex} className="bg-white p-2 rounded-md">
+    //                     {item.image && (
+    //                     <img src={item.image} alt={item.name} />
+    //                     )}
+    //                     <p className="text-sm mt-1">{item.name}</p>
+    //                 </div>
+    //                 ))}
+    //                 {/* Add empty boxes if there's no data */}
+    //                 {section.data.length < 9 && [...Array(9 - section.data.length)].map((_, emptyIndex) => (
+    //                 <div key={`empty-${emptyIndex}`} className="bg-white p-2 rounded-md" />
+    //                 ))}
+    //             </div>
+    //         </div>
+    //     ))}
+    // </div>
 
     return(
         <div className="h-screen flex flex-col justify-center">
             {props.visibilityProp && (
                 <div 
                     className="fixed bg-gray-50 p-8 rounded shadow-lg z-10" 
-                    style={{ top: '40%', left: '60%', transform: 'translate(-50%, -50%)', minWidth: '35vw', minHeight: '30vh' }}
+                    style={{ top: '70%', left: '55%', transform: 'translate(-50%, -50%)', minWidth: '35vw', minHeight: '30vh' }}
                 >
                     <div className="flex items-center justify-between">
                         <h2 className="text-2xl mb-4">{props.titleProp}</h2>
+                        {props.titleProp === "Shop" && (
+                            <div className="flex items-center">
+                                <img src='/images/coinGold.png' alt="Gold Coin" width={40} height={40} style={{ marginRight: '10px' }}/>
+                                <h3>Credits: {}</h3>
+                            </div>
+                        )}
                         <button className="bg-pink-500 text-white px-3 rounded-md" onClick={props.toggleProp}>Close</button>
                     </div>
+                    
                     <div className="p-4 overflow-y-auto h-96">
                         <div className="grid grid-cols-4 gap-4 mt-6">
                             {items.map(item => (
