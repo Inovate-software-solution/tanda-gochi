@@ -8,13 +8,13 @@ on:
   pull_request:
     branches:
       - main
-    types:
-      - synchronize
-      - opened
+    
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    container:
+      image: node:latest
 
     steps:
       - name: Check out code
@@ -33,7 +33,6 @@ jobs:
 
   build:
     needs: test
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     container:
       image: node:latest
