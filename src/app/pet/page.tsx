@@ -11,6 +11,7 @@ import walkImageWithHat from "../../../public/images/walkhat.gif";
 import walkLeftImageWithHat from "../../../public/images/walklefthat.gif";
 import wearHatImage from "../../../public/images/wearhat.gif";
 import Image from "../../../public/images/food.jpg";
+import playImage from "@/public/images/playball.gif";
 
 const Page: React.FC = () => {
   
@@ -24,6 +25,7 @@ const Page: React.FC = () => {
   const [direction, setDirection] = useState(1);
   const [isDancing, setIsDancing] = useState(false);
   const [isEating, setIsEating] = useState(false); 
+  const [isplaying, setIsplaying] = useState(false); 
   const [isHat, setHat] = useState(false);
   const [isWearingHat, setIsWearingHat] = useState(false);
   
@@ -92,6 +94,16 @@ const Page: React.FC = () => {
     requestAnimationFrame(animateWalking);
     }, 4000); 
   };
+  const startplayAnimation = () => {
+    setIsplaying(true);
+    setTimeout(() => {
+      setIsEating(false);
+      setIsDancing(false);
+      setIsplaying(false);
+      setDirection(1);
+    requestAnimationFrame(animateWalking);
+    }, 4000); 
+  };
 
   
   useEffect(() => {
@@ -149,6 +161,8 @@ const Page: React.FC = () => {
                         src={
                             isEating
                                 ? eatImage.src
+                                :isplaying
+                                ?playImage.src
                                 : isDancing
                                     ? addOilImage.src
                                     : isWearingHat
