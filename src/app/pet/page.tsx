@@ -72,6 +72,14 @@ const Page: React.FC = () => {
       setIsEating(false);
     }, 2000);
   };
+  const startEatAnimation = () => {
+    setIsEating(true);
+    setTimeout(() => {
+      setIsDancing(false);
+      setIsEating(false);
+      
+    }, 2000);
+  };
 
   const feedPet = () => {
     setFullness((prevFullness) => (prevFullness < 90 ? prevFullness + 10 : 100));
