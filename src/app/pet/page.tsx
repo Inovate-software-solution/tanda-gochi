@@ -27,8 +27,13 @@ const Page: React.FC = () => {
   const [isplaying, setIsplaying] = useState(false); 
   const [isHat, setHat] = useState(false);
   const [isWearingHat, setIsWearingHat] = useState(false);
+  // shop 
+  const [coins, setCoins] = useState(0);
+  const [hasFood1, setHasFood1] = useState(false);
+  const [hasFood2, setHasFood2] = useState(false);
   
   const step = 1;
+ 
 
   // Inventory related states
   const [ownedToy, setOwnedToy] = useState([]);
@@ -72,6 +77,24 @@ const Page: React.FC = () => {
       setIsEating(false);
     }, 2000);
   };
+  const buyFood = (foodType: number) => {
+    if (coins >= 10) { // Assuming each food costs 10 coins
+      setCoins(coins - 10);
+  
+      if (foodType === 1) {
+        setHasFood1(true);
+      } else if (foodType === 2) {
+        setHasFood2(true);
+      }
+    }
+  };
+{/* <button className="btn btn-success px-2 px-4 py-2" onClick={() => buyFood(1)} disabled={coins < 10 || hasFood1}>
+  Buy Food 1
+</button>
+<button className="btn btn-success px-2 px-4 py-2" onClick={() => buyFood(2)} disabled={coins < 10 || hasFood2}>
+  Buy Food 2
+</button> */}
+  
   const startEatAnimation = () => {
     setIsEating(true);
     setTimeout(() => {
