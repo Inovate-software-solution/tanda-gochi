@@ -14,6 +14,14 @@ import Image from "../../../public/images/food.jpg";
 import playImage from "@/public/images/playball.gif";
 
 const Page: React.FC = () => {
+  // API related states
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [inventory, setInventory] = useState([]);
+  const [outfitInventory, setOutfitInventory] = useState([])
+  const [toyInventory, setToyInventory] = useState([])
+  const [credits, setCredits] = useState(10);
+  const [lastInteracted, setLastInteracted] = useState();
   
   // Pet interaction related states
   const [happiness, setHappiness] = useState(50);
@@ -27,24 +35,51 @@ const Page: React.FC = () => {
   const [isplaying, setIsplaying] = useState(false); 
   const [isHat, setHat] = useState(false);
   const [isWearingHat, setIsWearingHat] = useState(false);
+
   // shop 
   const [coins, setCoins] = useState(0);
   const [hasFood1, setHasFood1] = useState(false);
   const [hasFood2, setHasFood2] = useState(false);
-  
   const step = 1;
- 
-
-  // Inventory related states
-  const [ownedToy, setOwnedToy] = useState([]);
-  const [ownedFood, setOwnedFood] = useState([]);
-  const [ownedCostume, setOwnedCostume] = useState([]);
-  const [ownedPet, setOwnedPet] = useState([]);
 
   // UI related states
   const [isWindowVisible, setWindowVisible] = useState(false);
   const [windowTitle, setWindowTitle] = useState("");
   const [inventoryType, setInventoryType] = useState("");
+
+  // Get the Current User's Inventory
+  useEffect(() => {
+      fetch(`https://capstone.marcusnguyen.dev/api/Users/current/inventory`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          setInventory(data.Inventory);
+          setOutfitInventory(data.OutfitInventory);
+          setToyInventory(data.ToysInventory);
+          setLastInteracted(data.LastInteracted);
+        }
+      })
+      .catch(error => {
+        setError(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      })
+  }, [])
+
+  // Calculate fullness and happiness WIP
+  /*
+    On a second thought, fullness and happiness should be changed to something 
+    like hungriness and loneliness which increase over time. This way we don't 
+    need to store their previous value, and items will just decress these stats.
+  */
+  if (lastInteracted !== undefined) {
+    const timePast = Date.now() - lastInteracted;
+    const newStats = 100 - (timePast / (1000 * 60 * 60)) * 3
+    setFullness(newStats);
+    setHappiness(newStats);
+  }
+  
 
   const toggleWearingHat = () => {
     setHat(!isHat);
@@ -88,19 +123,19 @@ const Page: React.FC = () => {
       }
     }
   };
-{/* <button className="btn btn-success px-2 px-4 py-2" onClick={() => buyFood(1)} disabled={coins < 10 || hasFood1}>
-  Buy Food 1
-</button>
-<button className="btn btn-success px-2 px-4 py-2" onClick={() => buyFood(2)} disabled={coins < 10 || hasFood2}>
-  Buy Food 2
-</button> */}
+  
+  {/* <button className="btn btn-success px-2 px-4 py-2" onClick={() => buyFood(1)} disabled={coins < 10 || hasFood1}>
+    Buy Food 1
+  </button>
+  <button className="btn btn-success px-2 px-4 py-2" onClick={() => buyFood(2)} disabled={coins < 10 || hasFood2}>
+    Buy Food 2
+  </button> */}
   
   const startEatAnimation = () => {
     setIsEating(true);
     setTimeout(() => {
       setIsDancing(false);
       setIsEating(false);
-      
     }, 2000);
   };
 
@@ -147,7 +182,16 @@ const Page: React.FC = () => {
             {/* <h1 className="text-4xl font-bold mb-4">Virtual Pet</h1> */}
             <div className="flex flex-col justify-center items-center h-full">
               <div className="border-4 border-sky-500 relative bg-bg_pet bg-center bg-no-repeat flex justify-center items-center" style={{ height: '50vh' }}>
-                <Inventory visibilityProp={isWindowVisible} titleProp={windowTitle} toggleProp={toggleWindow} typeProp={inventoryType} />
+                <Inventory 
+                  visibilityProp={isWindowVisible} 
+                  titleProp={windowTitle} 
+                  toggleProp={toggleWindow} 
+                  typeProp={inventoryType} 
+                  startEatAnimation={startEatAnimation}
+                  credits={credits}
+                  inventory={inventory}
+                  outfitInventory={outfitInventory}
+                />
                 <div style={{ position: "relative", width: "100vw", height: "50vh", overflow: "hidden" }}>
                   <div style={{ width: "500px", height: "500px", position: "absolute", top: "60%", left: "50%", transform: "translate(-50%, -50%)" }}>
                     <img
@@ -185,7 +229,7 @@ const Page: React.FC = () => {
                 </div>
               </div>
 
-            <div className="navbar bg-base-100 flex flex-col md:flex-row justify-center items-center md:w-3/4 lg:w-1/3 xl:w-3/4">
+            <div className="navbar bg-base-100 flex flex-col md:flex-row justify-center items-center mt-3 md:w-3/4 lg:w-1/3 xl:w-3/4">
               <div className="w-full md:w-1/3">
                 <p className="font-bold mr-2">Happiness</p>
                 <progress className="progress progress-accent w-full md:w-2/3 xl:w-56 mr-2" value={happiness} max="100"></progress>
@@ -199,7 +243,7 @@ const Page: React.FC = () => {
               </div>
 
               <div className="flex space-x-4 mt-4 md:mt-0">
-                <button className="btn btn-info px-2 md:px-4 py-2" onClick={() => { toggleWindow("Actions and Toys", "toys"); playWithPet(); }}>
+                <button className="btn btn-info px-2 md:px-4 py-2" onClick={() => { toggleWindow("Actions and Toys", "toy"); playWithPet(); }}>
                     Toys
                 </button>
                 <button className="btn btn-primary px-2 px-4 py-2" onClick={() => { toggleWindow("Food", "food"); feedPet(); }}>

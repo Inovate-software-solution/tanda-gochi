@@ -43,6 +43,7 @@ export default function LoginForm() {
         console.log(user);
         console.log(user.username);
         dispatch(setUserData(user.username));
+        sessionStorage.setItem("username", user.username);
       })
       .catch((err) => {
         console.log(err);
@@ -68,7 +69,7 @@ export default function LoginForm() {
 
         <div className="flex justify-center mt-10">
           <button
-            className="bg-teritary-60 hover:bg-teritary-40 p-1 px-4 rounded text-headline-small text-teritary-100 "
+            className="bg-tertiary-60 hover:bg-tertiary-40 p-1 px-4 rounded text-headline-small text-tertiary-100 "
             type="submit"
           >
             Submit

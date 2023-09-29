@@ -1,41 +1,41 @@
 import React, { useState, useEffect } from 'react';
 
 const Item = (props) => {
-    const startWearHatAnimation = () => {
-        if(isHat==false){setIsWearingHat(true);};
-        setTimeout(() => {
-          setIsDancing(false);
-          setIsEating(false);
-          setIsWearingHat(false);
-          toggleWearingHat();
-        }, 1000);
-      };
+  // const startWearHatAnimation = () => {
+  //     if(isHat==false){setIsWearingHat(true);};
+  //     setTimeout(() => {
+  //       setIsDancing(false);
+  //       setIsEating(false);
+  //       setIsWearingHat(false);
+  //       toggleWearingHat();
+  //     }, 1000);
+  //   };
 
-    const startEatAnimation = () => {
-        setIsEating(true);
-        setTimeout(() => {
-          setIsEating(false);
-          setIsDancing(false);
-          setDirection(1);
-        requestAnimationFrame(animateWalking);
-        }, 4000); 
-      };
-    
-      const startplayAnimation = () => {
-        setIsplaying(true);
-        setTimeout(() => {
-          setIsEating(false);
-          setIsDancing(false);
-          setIsplaying(false);
-          setDirection(1);
-        requestAnimationFrame(animateWalking);
-        }, 4000); 
-      };
+  // const startEatAnimation = () => {
+  //     setIsEating(true);
+  //     setTimeout(() => {
+  //       setIsEating(false);
+  //       setIsDancing(false);
+  //       setDirection(1);
+  //     requestAnimationFrame(animateWalking);
+  //     }, 4000); 
+  //   };
+  
+  //   const startplayAnimation = () => {
+  //     setIsplaying(true);
+  //     setTimeout(() => {
+  //       setIsEating(false);
+  //       setIsDancing(false);
+  //       setIsplaying(false);
+  //       setDirection(1);
+  //     requestAnimationFrame(animateWalking);
+  //     }, 4000); 
+  //   };
 
     return (
-        <div className="h-16 w-16 bg-gray-400 rounded border p-2 m-2 rounded-md">
-            <img src={props.image} alt={props.name} className="w-full h-full object-cover rounded-md" />
-            <h3 className="text-lg mt-2">{props.name}</h3>
+        <div className="h-16 w-16 bg-gray-400 rounded border m-2 rounded-md" onClick={props.onClick}>
+            <img src={props.image} alt={props.name} className="w-full h-full object-cover rounded-md p-1" />
+            <h4 className="text-lg mt-2">{props.name}</h4>
         </div>
         // <div className="h-14 w-14 bg-gray-400 rounded border relative group hover:bg-gray-500 transition duration-150">
         //     <img src={props.image} alt={props.name} className="w-full h-full object-cover rounded-md" />

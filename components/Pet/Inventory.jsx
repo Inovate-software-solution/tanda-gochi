@@ -2,37 +2,30 @@ import React, { useState, useEffect } from 'react';
 import Item from "./Item.jsx";
 
 const Inventory = (props) => {
-    const [userID, setUserID] = useState();
     const [itemsToDisplay, setItemsToDisplay] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [havebanana, setBanana] = useState(true);
     const [error, setError] = useState(null);
-    const [foodBoxFilled, setFoodBoxFilled] = useState(true);
     const [isEating, setIsEating] = useState(false);
 
-    const renderFoodBox = () => {
-        if (foodBoxFilled) {
-            return (
-                <div
-                    className="food-box"
-                    onClick={() => {
-                        startEatAnimation();
-                        setBanana(false);
-                    }}
-                >
-                    <img src="/images/food.jpg" alt="Food" />
-                </div>
-            );
-        } else {
-            return (
-                <div className="food-box empty">
-                    {/* Empty box */}
-                </div>
-            );
-        }
-    };
+    // Handle shop
+    // if (props.typeProp === 'shop') {
+    //     useEffect(() => {
+    //         fetch(`'https://capstone.marcusnguyen.dev/api/items'`)
+    //         .then("do something about it")
+    //     })
+    // }
 
-    const [items, setItems] = useState([]);
+    // Handle Other Inventory types
+    if (props.inventoryType) {
+        console.log(props.inventoryType);
+        if (props.inventoryType === 'food') {
+            setItemsToDisplay(props.inventory);
+        } else if (props.inventoryType === 'toy') {
+            setItemsToDisplay(props.toyInventory);
+        } else if (props.inventoryType === 'costume') {
+            setItemsToDisplay(props.outfitInventory)
+        }
+    }
     
     const type = {
         'toys': [],
@@ -55,13 +48,14 @@ const Inventory = (props) => {
         'costumes': [],
         'pets': []
     }
-    
-    useEffect(() => {
-        if (props.typeProp && type[props.typeProp]) {
-            setItems(type[props.typeProp]);
-        }
-        console.log(items);
-    }, [props.typeProp]);
+
+    // const [items, setItems] = useState([]);
+    // useEffect(() => {
+    //     if (props.typeProp && type[props.typeProp]) {
+    //         setItems(type[props.typeProp]);
+    //     }
+    //     console.log(items);
+    // }, [props.typeProp]);
 
     useEffect(() => {
         if (isEating) {
@@ -83,7 +77,7 @@ const Inventory = (props) => {
                         {props.titleProp === "Shop" && (
                             <div className="sm:text-sm md:text-base flex items-center">
                                     <img src='/images/coinGold.png' alt="Gold Coin" width={30} height={30} style={{ marginRight: '10px' }}/>  
-                                    Credits: {}
+                                    Credits: {props.credits}
                             </div>
                         )}
                         <button className="btn btn-circle btn-outline"  onClick={props.toggleProp}>
@@ -107,20 +101,16 @@ const Inventory = (props) => {
 
                     {!isLoading && (
                         <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
-                            <Item></Item>
-                            {havebanana ? (
-                                renderFoodBox()
-                            ) : (
-                                <>
-                                    <Item></Item>
-                                    <Item></Item>
-                                    <Item></Item>
-                                    <Item></Item>
-                                    <Item></Item>
-                                    <Item></Item>
-                                    <Item></Item>
-                                </>
-                            )}
+                            <Item image={"/images/food.jpg"} name={"Banana"} onClick={() => {
+                                props.startEatAnimation();
+                            }}/>
+                            {/* {itemsToDisplay.map(item => {
+                                <Item 
+                                    image={item.ImageURL}
+                                    name={item.Name}
+                                    // still needs to handle item quantity
+                                />
+                            })} */}
                         </div>
                     )}
                 </div>
