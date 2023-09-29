@@ -24,8 +24,8 @@ const Page: React.FC = () => {
   const [lastInteracted, setLastInteracted] = useState();
   
   // Pet interaction related states
-  const [happiness, setHappiness] = useState(50);
-  const [fullness, setFullness] = useState(50);
+  const [loneliness, setLoneliness] = useState(50);
+  const [hungriness, setHungriness] = useState(50);
 
   // Pet animation related states
   const [positionX, setPositionX] = useState(0);
@@ -75,9 +75,9 @@ const Page: React.FC = () => {
   */
   if (lastInteracted !== undefined) {
     const timePast = Date.now() - lastInteracted;
-    const newStats = 100 - (timePast / (1000 * 60 * 60)) * 3
-    setFullness(newStats);
-    setHappiness(newStats);
+    const newStats = (timePast / (1000 * 60 * 60)) * 3
+    setHungriness(newStats + hungriness);
+    setLoneliness(newStats + loneliness);
   }
   
 
@@ -140,11 +140,11 @@ const Page: React.FC = () => {
   };
 
   const feedPet = () => {
-    setFullness((prevFullness) => (prevFullness < 90 ? prevFullness + 10 : 100));
+    setHungriness((prevHungriness) => (prevHungriness > 10 ? prevHungriness - 10 : 0));
   };
 
   const playWithPet = () => {
-      setHappiness((prevHappiness) => (prevHappiness < 90 ? prevHappiness + 10 : 100));
+      setLoneliness((prevLoneliness) => (prevLoneliness < 10 ? prevLoneliness - 10 : 0));
   };
 
   const toggleWindow = (title = "", type = "") => {
@@ -164,16 +164,6 @@ const Page: React.FC = () => {
       clearInterval(autoDanceInterval);
     };
   }, [positionX, direction, isDancing, isEating, isWearingHat]);
-  
-  // decrement happiness and fullness
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHappiness((prevHappiness) => (prevHappiness > 10 ? prevHappiness - 10 : 0));
-      setFullness((prevFullness) => (prevFullness > 10 ? prevFullness - 10 : 0));
-    }, 3600000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div className="overflow-x-hidden" data-theme="emerald">
@@ -231,15 +221,15 @@ const Page: React.FC = () => {
 
             <div className="navbar bg-base-100 flex flex-col md:flex-row justify-center items-center mt-3 md:w-3/4 lg:w-1/3 xl:w-3/4">
               <div className="w-full md:w-1/3">
-                <p className="font-bold mr-2">Happiness</p>
-                <progress className="progress progress-accent w-full md:w-2/3 xl:w-56 mr-2" value={happiness} max="100"></progress>
-                <p className="text-xs mt-1">{happiness}%</p>
+                <p className="font-bold mr-2">Loneliness</p>
+                <progress className="progress progress-accent w-full md:w-2/3 xl:w-56 mr-2" value={loneliness} max="100"></progress>
+                <p className="text-xs mt-1">{loneliness}%</p>
               </div>
 
               <div className="w-full md:w-1/3">
-                <p className="font-bold mr-2">Fullness</p>
-                <progress className="progress progress-success w-full md:w-2/3 xl:w-56 mr-2" value={fullness} max="100"></progress>
-                <p className="text-xs mt-1">{fullness}%</p>
+                <p className="font-bold mr-2">Hungriness</p>
+                <progress className="progress progress-success w-full md:w-2/3 xl:w-56 mr-2" value={hungriness} max="100"></progress>
+                <p className="text-xs mt-1">{hungriness}%</p>
               </div>
 
               <div className="flex space-x-4 mt-4 md:mt-0">
