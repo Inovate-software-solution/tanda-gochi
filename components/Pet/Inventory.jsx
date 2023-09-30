@@ -7,6 +7,7 @@ const Inventory = (props) => {
     const [error, setError] = useState(null);
     const [isEating, setIsEating] = useState(false);
 
+    // #### TO-DO ###
     // Handle shop
     // if (props.typeProp === 'shop') {
     //     useEffect(() => {
@@ -15,39 +16,21 @@ const Inventory = (props) => {
     //     })
     // }
 
-    // Handle Other Inventory types
-    if (props.inventoryType) {
-        console.log(props.inventoryType);
-        if (props.inventoryType === 'food') {
+    // Load items to display based on which button was pressed
+    useEffect(() => {
+        if (props.typeProp === 'food') {
             setItemsToDisplay(props.inventory);
-        } else if (props.inventoryType === 'toy') {
+        } else if (props.typeProp === 'toy') {
             setItemsToDisplay(props.toyInventory);
-        } else if (props.inventoryType === 'costume') {
-            setItemsToDisplay(props.outfitInventory)
+        } else if (props.typeProp === 'outfit') {
+            setItemsToDisplay(props.outfitInventory);
         }
-    }
-    
-    const type = {
-        'toys': [],
-        'food': [
-            {
-                id: 1,
-                name: 'Toy Ball',
-                image: '/images/uphappy.png', 
-                description: 'A fun toy ball for your pet.',
-                type: 'food'
-            },
-            {
-                id: 2,
-                name: 'Dog Bone',
-                image: '/images/uphappy.png',
-                description: 'A delicious bone for dogs.',
-                type: 'food'
-            }
-        ],
-        'costumes': [],
-        'pets': []
-    }
+        console.log(itemsToDisplay);
+    }, [props.typeProp, props.inventory, props.toyInventory, props.outfitInventory]);
+
+    // #### TO-DO ###
+    // Need to search the loaded items from database to be able to load them
+
 
     // const [items, setItems] = useState([]);
     // useEffect(() => {
@@ -57,13 +40,13 @@ const Inventory = (props) => {
     //     console.log(items);
     // }, [props.typeProp]);
 
-    useEffect(() => {
-        if (isEating) {
-            setTimeout(() => {
-                setIsEating(false);
-            }, 3000); // Play the animation for 3 seconds
-        }
-    }, [isEating]);
+    // useEffect(() => {
+    //     if (isEating) {
+    //         setTimeout(() => {
+    //             setIsEating(false);
+    //         }, 3000); // Play the animation for 3 seconds
+    //     }
+    // }, [isEating]);
 
     return(
         <div className="h-screen flex justify-center">
@@ -81,7 +64,9 @@ const Inventory = (props) => {
                             </div>
                         )}
                         <button className="btn btn-circle btn-outline"  onClick={props.toggleProp}>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
                         </button>
                     </div>
 
@@ -101,16 +86,34 @@ const Inventory = (props) => {
 
                     {!isLoading && (
                         <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
-                            <Item image={"/images/food.jpg"} name={"Banana"} onClick={() => {
-                                props.startEatAnimation();
-                            }}/>
-                            {/* {itemsToDisplay.map(item => {
-                                <Item 
-                                    image={item.ImageURL}
-                                    name={item.Name}
-                                    // still needs to handle item quantity
-                                />
-                            })} */}
+                            {itemsToDisplay.map(item => {
+                                if (props.typeProp === 'food') {
+                                    return (
+                                        <Item 
+                                            image={item.ImageURL}
+                                            name={item.ItemId}
+                                            quantity={item.Quantity}
+                                            onClick={() => {props.startEatAnimation(); props.feedPet()}}
+                                        />
+                                    );
+                                } else if (props.typeProp === 'toy') {
+                                    return (
+                                        <Item 
+                                            image={item.ImageURL}
+                                            name={item.ToyId}
+                                            onClick={() => {props.startPlayAnimation(); props.playWithPet()}}
+                                        />
+                                    );
+                                } else if (props.typeProp === 'outfit') {
+                                    return (
+                                        <Item 
+                                            image={item.ImageURL}
+                                            name={item.OutfitId}
+                                            onClick={props.startWearHatAnimation()}
+                                        />
+                                    );
+                                }
+                            })}
                         </div>
                     )}
                 </div>

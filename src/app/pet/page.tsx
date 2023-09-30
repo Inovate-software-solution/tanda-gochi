@@ -13,21 +13,68 @@ import wearHatImage from "../../../public/images/wearhat.gif";
 import Image from "../../../public/images/food.jpg";
 import playImage from "@/public/images/playball.gif";
 
-const Page: React.FC = () => {
+interface Food {
+  ItemId: string;
+  Quantity: number;
+};
+
+interface Toy {
+  ToyId: string
+}
+
+interface Outfit {
+  OutfitId: String;
+  Equipped: boolean;
+}
+
+// For testing purpose
+const mockItems = {
+  'ToysInventory': [
+    {
+      ToyId: "TestToy1"
+    },
+    {
+      ToyId: "TestToy2"
+    }
+  ],
+  'Inventory': [
+    {
+      ItemId: 'TestFood1',
+      Quantity: 3
+    },
+    {
+      ItemId: 'TestFood2',
+      Quantity: 1
+    }
+  ],
+  'OutfitsInventory': [
+    {
+      OutfitId: "TestOutfit1",
+      Equipped: false,
+    },
+    {
+      OutfitId: "TestOutfit2",
+      Equipped: false,
+    }
+  ],
+  'pets': []
+}
+
+const Page = () => {
   // API related states
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [inventory, setInventory] = useState([]);
-  const [outfitInventory, setOutfitInventory] = useState([])
-  const [toyInventory, setToyInventory] = useState([])
+  const [inventory, setInventory] = useState<Food[]>([]);
+  const [toyInventory, setToyInventory] = useState<Toy[]>([])
+  const [outfitInventory, setOutfitInventory] = useState<Outfit[]>([])
   const [credits, setCredits] = useState(10);
   const [lastInteracted, setLastInteracted] = useState();
   
-  // Pet interaction related states
+  // Stats related states
   const [loneliness, setLoneliness] = useState(50);
   const [hungriness, setHungriness] = useState(50);
 
-  // Pet animation related states
+  // Animation related states
   const [positionX, setPositionX] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isDancing, setIsDancing] = useState(false);
@@ -47,40 +94,69 @@ const Page: React.FC = () => {
   const [windowTitle, setWindowTitle] = useState("");
   const [inventoryType, setInventoryType] = useState("");
 
+  // #### TO-DO ###
   // Get the Current User's Inventory
-  useEffect(() => {
-      fetch(`https://capstone.marcusnguyen.dev/api/Users/current/inventory`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data) {
-          setInventory(data.Inventory);
-          setOutfitInventory(data.OutfitInventory);
-          setToyInventory(data.ToysInventory);
-          setLastInteracted(data.LastInteracted);
-        }
-      })
-      .catch(error => {
-        setError(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      })
-  }, [])
+  // useEffect(() => {
+  //     fetch(`https://capstone.marcusnguyen.dev/api/Users/current/inventory`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       if (data) {
+  //         setInventory(data.Inventory);
+  //         setOutfitInventory(data.OutfitInventory);
+  //         setToyInventory(data.ToysInventory);
+  //         setLastInteracted(data.LastInteracted);
+  //       }
+  //     })
+  //     .catch(error => {
+  //       setError(error);
+  //     })
+  //     .finally(() => {
+  //       setIsLoading(false);
+  //     })
+  // }, [])
 
+  useEffect(() => {
+    setInventory(mockItems.Inventory);
+    setToyInventory(mockItems.ToysInventory);
+    setOutfitInventory(mockItems.OutfitsInventory);
+  }, [mockItems])
+  
+  useEffect(() => {
+    const animationId = requestAnimationFrame(animateWalking);
+    const autoDanceInterval = setInterval(() => {
+      startAutoDance();
+    }, 2000);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      clearInterval(autoDanceInterval);
+    };
+  }, [positionX, direction, isDancing, isEating, isWearingHat]);
+
+  // #### TO-DO ###
   // Calculate fullness and happiness WIP
   /*
     On a second thought, fullness and happiness should be changed to something 
     like hungriness and loneliness which increase over time. This way we don't 
     need to store their previous value, and items will just decress these stats.
   */
-  if (lastInteracted !== undefined) {
-    const timePast = Date.now() - lastInteracted;
-    const newStats = (timePast / (1000 * 60 * 60)) * 3
-    setHungriness(newStats + hungriness);
-    setLoneliness(newStats + loneliness);
-  }
-  
+  // if (lastInteracted !== undefined) {
+  //   const timePast = Date.now() - lastInteracted;
+  //   const newStats = (timePast / (1000 * 60 * 60)) * 3
+  //   setHungriness(newStats + hungriness);
+  //   setLoneliness(newStats + loneliness);
+  // }
 
+  // Stats related functions
+  const feedPet = () => {
+    setHungriness((prevHungriness) => (prevHungriness > 10 ? prevHungriness - 10 : 0));
+  };
+
+  const playWithPet = () => {
+      setLoneliness((prevLoneliness) => (prevLoneliness > 10 ? prevLoneliness - 10 : 0));
+  };
+  
+  // Animation related functions
   const toggleWearingHat = () => {
     setHat(!isHat);
   };
@@ -89,7 +165,6 @@ const Page: React.FC = () => {
     if (!(isDancing || isEating||isWearingHat)) {
       const newPositionX = positionX + step * direction;
       //console.log("x:", positionX); 
-
       if (newPositionX >= 250) {
         setDirection(-1);
         setPositionX(newPositionX);
@@ -112,6 +187,38 @@ const Page: React.FC = () => {
       setIsEating(false);
     }, 2000);
   };
+  
+  const startEatAnimation = () => {
+    setIsEating(true);
+    setTimeout(() => {
+      setIsEating(false);
+      setIsDancing(false);
+      setDirection(1);
+    requestAnimationFrame(animateWalking);
+    }, 4000); 
+  };
+
+  const startPlayAnimation = () => {
+    setIsplaying(true);
+    setTimeout(() => {
+      setIsEating(false);
+      setIsDancing(false);
+      setIsplaying(false);
+      setDirection(1);
+    requestAnimationFrame(animateWalking);
+    }, 4000); 
+  };
+
+  const startWearHatAnimation = () => {
+    if(isHat==false){setIsWearingHat(true);};
+    setTimeout(() => {
+      setIsDancing(false);
+      setIsEating(false);
+      setIsWearingHat(false);
+      toggleWearingHat();
+    }, 1000);
+  };
+
   const buyFood = (foodType: number) => {
     if (coins >= 10) { // Assuming each food costs 10 coins
       setCoins(coins - 10);
@@ -123,64 +230,44 @@ const Page: React.FC = () => {
       }
     }
   };
-  
-  {/* <button className="btn btn-success px-2 px-4 py-2" onClick={() => buyFood(1)} disabled={coins < 10 || hasFood1}>
+
+  {/* 
+  <button className="btn btn-success px-2 px-4 py-2" onClick={() => buyFood(1)} disabled={coins < 10 || hasFood1}>
     Buy Food 1
   </button>
   <button className="btn btn-success px-2 px-4 py-2" onClick={() => buyFood(2)} disabled={coins < 10 || hasFood2}>
     Buy Food 2
-  </button> */}
-  
-  const startEatAnimation = () => {
-    setIsEating(true);
-    setTimeout(() => {
-      setIsDancing(false);
-      setIsEating(false);
-    }, 2000);
-  };
+  </button> 
+  */}
 
-  const feedPet = () => {
-    setHungriness((prevHungriness) => (prevHungriness > 10 ? prevHungriness - 10 : 0));
-  };
-
-  const playWithPet = () => {
-      setLoneliness((prevLoneliness) => (prevLoneliness < 10 ? prevLoneliness - 10 : 0));
-  };
-
+  // UI related functions
   const toggleWindow = (title = "", type = "") => {
     setWindowTitle(title);
-    setWindowVisible(!isWindowVisible);
     setInventoryType(type);
+    setWindowVisible(!isWindowVisible);
   };
   
-  useEffect(() => {
-    const animationId = requestAnimationFrame(animateWalking);
-    const autoDanceInterval = setInterval(() => {
-      startAutoDance();
-    }, 2000);
-
-    return () => {
-      cancelAnimationFrame(animationId);
-      clearInterval(autoDanceInterval);
-    };
-  }, [positionX, direction, isDancing, isEating, isWearingHat]);
-
   return (
     <div className="overflow-x-hidden" data-theme="emerald">
       <Sidebar>
           <main className="bg-gray-100 min-h-screen p-4">
             {/* <h1 className="text-4xl font-bold mb-4">Virtual Pet</h1> */}
             <div className="flex flex-col justify-center items-center h-full">
-              <div className="border-4 border-sky-500 relative bg-bg_pet bg-center bg-no-repeat flex justify-center items-center" style={{ height: '50vh' }}>
+              <div className="relative bg-bg_pet bg-center bg-no-repeat flex justify-center items-center" style={{ height: '50vh' }}>
                 <Inventory 
                   visibilityProp={isWindowVisible} 
                   titleProp={windowTitle} 
                   toggleProp={toggleWindow} 
                   typeProp={inventoryType} 
                   startEatAnimation={startEatAnimation}
+                  startPlayAnimation={startPlayAnimation}
+                  startWearHatAnimation={startWearHatAnimation}
                   credits={credits}
                   inventory={inventory}
                   outfitInventory={outfitInventory}
+                  toyInventory={toyInventory}
+                  feedPet={feedPet}
+                  playWithPet={playWithPet}
                 />
                 <div style={{ position: "relative", width: "100vw", height: "50vh", overflow: "hidden" }}>
                   <div style={{ width: "500px", height: "500px", position: "absolute", top: "60%", left: "50%", transform: "translate(-50%, -50%)" }}>
@@ -233,14 +320,14 @@ const Page: React.FC = () => {
               </div>
 
               <div className="flex space-x-4 mt-4 md:mt-0">
-                <button className="btn btn-info px-2 md:px-4 py-2" onClick={() => { toggleWindow("Actions and Toys", "toy"); playWithPet(); }}>
+                <button className="btn btn-info px-2 md:px-4 py-2" onClick={() => { toggleWindow("Toys", "toy"); }}>
                     Toys
                 </button>
-                <button className="btn btn-primary px-2 px-4 py-2" onClick={() => { toggleWindow("Food", "food"); feedPet(); }}>
+                <button className="btn btn-primary px-2 px-4 py-2" onClick={() => { toggleWindow("Food", "food"); }}>
                     Food
                 </button>
-                <button className="btn btn-warning px-2 px-4 py-2" onClick={() => toggleWindow("Inventory", "costume")}>
-                    Costumes
+                <button className="btn btn-warning px-2 px-4 py-2" onClick={() => toggleWindow("Outfits", "outfit")}>
+                    Outfits
                 </button>
                 <button className="btn btn-error px-2 px-4 py-2" onClick={() => toggleWindow("Shop", "shop")}>
                     Shop
