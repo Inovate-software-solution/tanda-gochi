@@ -27,7 +27,7 @@ export default function Home() {
       <div
         className={
           clocking
-            ? "min-h-screen w-full sm:min-h-0 rounded-none sm:w-[400px] sm:h-[650px] backdrop-blur-sm sm:rounded-3xl sm:items-start items-center flex justify-center bg-teritary-10/90"
+            ? "min-h-screen w-full sm:min-h-0 rounded-none sm:w-[400px] sm:h-[650px] backdrop-blur-sm sm:rounded-3xl sm:items-start items-center flex justify-center bg-tertiary-10/95"
             : "min-h-screen w-full sm:min-h-0 rounded-none sm:w-[400px] sm:h-[650px] backdrop-blur-sm sm:rounded-3xl sm:items-start items-center flex justify-center bg-white"
         }
       >
