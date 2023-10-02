@@ -5,20 +5,15 @@ import { RootState } from "@/store/store";
 import { setUserData } from "@/store/reducers/userSlice";
 import axios from "axios";
 
-interface FormValues {
-  username: string;
-  password: string;
-}
-
 export default function LoginForm() {
-  const [formValue, setFormValue] = useState<FormValues>({
+  const [formValue, setFormValue] = useState({
     username: "",
     password: "",
   });
 
   const dispatch = useDispatch();
   const baseURL = process.env.BACKEND_API;
-  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleValueChange = (e) => {
     e.preventDefault();
     setFormValue((prevState) => ({
       ...prevState,
@@ -26,7 +21,7 @@ export default function LoginForm() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form submitted with formValue:", formValue);
     const user = {
@@ -43,13 +38,14 @@ export default function LoginForm() {
         console.log(user);
         console.log(user.username);
         dispatch(setUserData(user.username));
+        sessionStorage.setItem("username", user.username);
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  const testing = (e: React.MouseEvent<HTMLElement>) => {
+  const testing = (e) => {
     dispatch(setUserData("Something"));
   };
   return (
@@ -68,7 +64,7 @@ export default function LoginForm() {
 
         <div className="flex justify-center mt-10">
           <button
-            className="bg-teritary-60 hover:bg-teritary-40 p-1 px-4 rounded text-headline-small text-teritary-100 "
+            className="bg-tertiary-60 hover:bg-tertiary-40 p-1 px-4 rounded text-headline-small text-tertiary-100 "
             type="submit"
           >
             Submit

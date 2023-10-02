@@ -8,43 +8,39 @@ import { useEffect, useState } from "react";
 
 export default function InfoLayout({
   children, // will be a page or nested layout
-}: {
-  children: React.ReactNode;
 }) {
-
   const router = useRouter();
-  const appUsername = useSelector((state: RootState) => state.user.username);
+  const appUsername = useSelector((state) => state.user.username);
   const [isLoading, setIsLoading] = useState(true);
-  const [content, setContent] = useState<'loading' | 'sidebar' | 'accessDenied' | 'redirectToAuth'>('loading');
+  const [content, setContent] = useState("loading");
 
   useEffect(() => {
     if (appUsername == null) {
-      setContent('redirectToAuth');
+      setContent("redirectToAuth");
     } else if (appUsername === "admin") {
-      setContent('sidebar');
+      setContent("sidebar");
     } else {
-      setContent('accessDenied');
+      setContent("accessDenied");
     }
   }, [appUsername]);
-  
 
   // if (isLoading) {
   //   return <div>Loading...</div>; // Or your loading component
   // } else {
   //   return <Sidebar>{children}</Sidebar>;
   // }
-  if (content === 'loading') {
+  if (content === "loading") {
     return <div>Loading...</div>;
   }
-  
-  if (content === 'redirectToAuth') {
+
+  if (content === "redirectToAuth") {
     router.push("/auth");
     return null;
   }
-  
-  if (content === 'sidebar') {
+
+  if (content === "sidebar") {
     return <Sidebar>{children}</Sidebar>;
   }
-  
-  return <div>Access Denied</div>;  
+
+  return <div>Access Denied</div>;
 }

@@ -10,7 +10,7 @@ import LiveTime from "@/components/General/LiveTime";
 
 export default function AuthLayout() {
   const router = useRouter();
-  const appUsername = useSelector((state: RootState) => state.user.username);
+  const appUsername = useSelector((state) => state.user.username);
 
   useEffect(() => {
     if (appUsername != null) {

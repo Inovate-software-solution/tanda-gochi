@@ -117,7 +117,7 @@ module.exports = {
             container: "rgba(204,232,231,255)",
             container_on: "rgba(4,31,32,255)",
           },
-          teritary: {
+          tertiary: {
             base: "rgba(76,95,124,255)",
             on: "rgba(255,255,255,255)",
             container: "rgba(211,227,255,255)",
@@ -154,7 +154,7 @@ module.exports = {
             container: "rgba(50,75,75,255)",
             container_on: "rgba(204,232,231,255)",
           },
-          teritary: {
+          tertiary: {
             base: "rgba(179,200,233,255)",
             on: "rgba(29,49,75,255)",
             container: "rgba(52,72,99,255)",
