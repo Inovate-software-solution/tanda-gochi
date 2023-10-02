@@ -59,7 +59,7 @@ const Inventory = (props) => {
                         <h2 className="text-base font-bold md:text-base lg:text-lg xl:text-xl mb-4">{props.titleProp}</h2>
                         {props.titleProp === "Shop" && (
                             <div className="sm:text-sm md:text-base flex items-center">
-                                <Image src='/images/coinGold.png' alt="Gold Coin" width={30} height={30} style={{ marginRight: '10px' }}/>  
+                                <img src='/images/coinGold.png' alt="Gold Coin" width={30} height={30} style={{ marginRight: '10px' }}/>  
                                 Credits: {props.credits}
                             </div>
                         )}
