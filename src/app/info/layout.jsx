@@ -12,11 +12,7 @@ export default function InfoLayout({
   const router = useRouter();
   const appUsername = useSelector((state) => state.user.username);
   const [isLoading, setIsLoading] = useState(true);
-  const [content, setContent] =
-    (useState < "loading") |
-    "sidebar" |
-    "accessDenied" |
-    ("redirectToAuth" > "loading");
+  const [content, setContent] = useState("loading");
 
   useEffect(() => {
     if (appUsername == null) {
