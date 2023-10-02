@@ -2,27 +2,29 @@
 
 import Sidebar from "../../../components/Info/Sidebar";
 import { useRouter } from "next/navigation";
-import { RootState } from "@/store/store";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 
 export default function InfoLayout({
   children, // will be a page or nested layout
 }) {
   const router = useRouter();
-  const appUsername = useSelector((state) => state.user.username);
   const [isLoading, setIsLoading] = useState(true);
   const [content, setContent] = useState("loading");
 
   useEffect(() => {
-    if (appUsername == null) {
+    if (
+      !sessionStorage.getItem("jwt") ||
+      sessionStorage.getItem("jwt") === ""
+    ) {
       setContent("redirectToAuth");
-    } else if (appUsername === "admin") {
+      // } else if (appUsername === "admin") {
+      //   setContent("sidebar");
+    } else if (sessionStorage.getItem("jwt")) {
       setContent("sidebar");
     } else {
       setContent("accessDenied");
     }
-  }, [appUsername]);
+  }, []);
 
   // if (isLoading) {
   //   return <div>Loading...</div>; // Or your loading component

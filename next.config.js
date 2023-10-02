@@ -6,7 +6,7 @@ const nextConfig = {
     appDir: true,
   },
   env: {
-    BACKEND_API: "http://localhost:4000",
+    BACKEND_API: "https://capstone.marcusnguyen.dev/api",
   },
   webpack: (config) => {
     config.resolve.alias["@"] = path.join(__dirname);
