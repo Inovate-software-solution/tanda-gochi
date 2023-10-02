@@ -5,20 +5,15 @@ import { RootState } from "@/store/store";
 import { setUserData } from "@/store/reducers/userSlice";
 import axios from "axios";
 
-interface FormValues {
-  username: string;
-  password: string;
-}
-
 export default function LoginForm() {
-  const [formValue, setFormValue] = useState<FormValues>({
+  const [formValue, setFormValue] = useState({
     username: "",
     password: "",
   });
 
   const dispatch = useDispatch();
   const baseURL = process.env.BACKEND_API;
-  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleValueChange = (e) => {
     e.preventDefault();
     setFormValue((prevState) => ({
       ...prevState,
@@ -26,7 +21,7 @@ export default function LoginForm() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form submitted with formValue:", formValue);
     const user = {
@@ -50,7 +45,7 @@ export default function LoginForm() {
       });
   };
 
-  const testing = (e: React.MouseEvent<HTMLElement>) => {
+  const testing = (e) => {
     dispatch(setUserData("Something"));
   };
   return (

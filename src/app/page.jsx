@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Success from "@/public/images/check-green.gif";
 import Failed from "@/public/images/error-img.gif";
 import TandaLogo from "@/components/General/TandaLogo";
@@ -52,7 +51,7 @@ export default function Home() {
 
             <div className="mx-6">
               <div className="grid grid-cols-3 w-full font-bold">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((index: any) => (
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
                   <div key={index} className="m-1 sm:m-1">
                     <div className="flex justify-center">
                       <button
