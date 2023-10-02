@@ -26,7 +26,7 @@ const Inventory = (props) => {
             setItemsToDisplay(props.outfitInventory);
         }
         console.log(itemsToDisplay);
-    }, [props.typeProp, props.inventory, props.toyInventory, props.outfitInventory]);
+    }, [props.typeProp, props.inventory, props.toyInventory, props.outfitInventory, itemsToDisplay]);
 
     // #### TO-DO ###
     // Need to search the loaded items from database to be able to load them
@@ -59,8 +59,8 @@ const Inventory = (props) => {
                         <h2 className="text-base font-bold md:text-base lg:text-lg xl:text-xl mb-4">{props.titleProp}</h2>
                         {props.titleProp === "Shop" && (
                             <div className="sm:text-sm md:text-base flex items-center">
-                                    <img src='/images/coinGold.png' alt="Gold Coin" width={30} height={30} style={{ marginRight: '10px' }}/>  
-                                    Credits: {props.credits}
+                                <Image src='/images/coinGold.png' alt="Gold Coin" width={30} height={30} style={{ marginRight: '10px' }}/>  
+                                Credits: {props.credits}
                             </div>
                         )}
                         <button className="btn btn-circle btn-outline"  onClick={props.toggleProp}>
@@ -89,7 +89,8 @@ const Inventory = (props) => {
                             {itemsToDisplay.map(item => {
                                 if (props.typeProp === 'food') {
                                     return (
-                                        <Item 
+                                        <Item
+                                            key={item.ItemId}
                                             image={item.ImageURL}
                                             name={item.ItemId}
                                             quantity={item.Quantity}
@@ -98,7 +99,8 @@ const Inventory = (props) => {
                                     );
                                 } else if (props.typeProp === 'toy') {
                                     return (
-                                        <Item 
+                                        <Item
+                                            key={item.ItemId}
                                             image={item.ImageURL}
                                             name={item.ToyId}
                                             onClick={() => {props.startPlayAnimation(); props.playWithPet()}}
@@ -106,7 +108,8 @@ const Inventory = (props) => {
                                     );
                                 } else if (props.typeProp === 'outfit') {
                                     return (
-                                        <Item 
+                                        <Item
+                                            key={item.ItemId}
                                             image={item.ImageURL}
                                             name={item.OutfitId}
                                             onClick={props.startWearHatAnimation()}

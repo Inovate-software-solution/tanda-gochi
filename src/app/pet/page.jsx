@@ -10,8 +10,8 @@ import eatImage from "../../../public/images/eat.gif";
 import walkImageWithHat from "../../../public/images/walkhat.gif";
 import walkLeftImageWithHat from "../../../public/images/walklefthat.gif";
 import wearHatImage from "../../../public/images/wearhat.gif";
-import Image from "../../../public/images/food.jpg";
 import playImage from "@/public/images/playball.gif";
+import Image from "next/image";
 
 // For testing purpose
 const mockItems = {
@@ -105,7 +105,7 @@ const Page = () => {
     setInventory(mockItems.Inventory);
     setToyInventory(mockItems.ToysInventory);
     setOutfitInventory(mockItems.OutfitsInventory);
-  }, [mockItems]);
+  }, []);
 
   useEffect(() => {
     const animationId = requestAnimationFrame(animateWalking);
