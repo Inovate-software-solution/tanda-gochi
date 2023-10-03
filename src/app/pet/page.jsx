@@ -152,7 +152,7 @@ const Page = () => {
   };
 
   const animateWalking = () => {
-    if (!(isDancing || isEating || isWearingHat)) {
+    if (!(isDancing || isEating || isWearingHat||isplaying)) {
       const newPositionX = positionX + step * direction;
       //console.log("x:", positionX);
       if (newPositionX >= 250) {
@@ -196,7 +196,7 @@ const Page = () => {
       setIsplaying(false);
       setDirection(1);
       requestAnimationFrame(animateWalking);
-    }, 4000);
+    }, 2000);
   };
 
   const startWearHatAnimation = () => {
@@ -208,7 +208,7 @@ const Page = () => {
       setIsEating(false);
       setIsWearingHat(false);
       toggleWearingHat();
-    }, 1000);
+    }, 500);
   };
 
   const buyFood = (foodType) => {
