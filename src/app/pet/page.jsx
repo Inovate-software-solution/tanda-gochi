@@ -3,6 +3,7 @@
 import Sidebar from "../../../components/Info/Sidebar";
 import Inventory from "../../../components/Pet/Inventory";
 import React, { useEffect, useState } from "react";
+import eatbanana from "@/public/images/eatbanana.gif"
 import rightwalkingImage from "../../../public/images/walk.gif";
 import leftwalkingImage from "../../../public/images/walkleft.gif";
 import addOilImage from "../../../public/images/addoil.gif";
@@ -12,6 +13,7 @@ import walkLeftImageWithHat from "../../../public/images/walklefthat.gif";
 import wearHatImage from "../../../public/images/wearhat.gif";
 import playImage from "@/public/images/playball.gif";
 import Image from "next/image";
+import Item from "@/components/Pet/Item.jsx";
 
 // For testing purpose
 const mockItems = {
@@ -288,7 +290,9 @@ const Page = () => {
                   <img
                     src={
                       isEating
+                      ?props.id==="651c0f1a9abd0bd9086f62c1"
                         ? eatImage.src
+                        :eatbanana.scr
                         : isplaying
                         ? playImage.src
                         : isDancing
