@@ -181,13 +181,14 @@ const Page = () => {
   };
 
   const startEatAnimation = () => {
+    if(hasFood1 && hasFood2){
     setIsEating(true);
     setTimeout(() => {
       setIsEating(false);
       setIsDancing(false);
       setDirection(1);
       requestAnimationFrame(animateWalking);
-    }, 4000);
+    }, 4000);}
   };
 
   const startPlayAnimation = () => {
@@ -290,9 +291,10 @@ const Page = () => {
                   <img
                     src={
                       isEating
-                      ?props.id==="651c0f1a9abd0bd9086f62c1"
+                      ? hasFood1
                         ? eatImage.src
-                        :eatbanana.scr
+                        :eatbanana.src
+                          
                         : isplaying
                         ? playImage.src
                         : isDancing

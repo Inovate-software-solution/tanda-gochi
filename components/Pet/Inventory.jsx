@@ -116,6 +116,16 @@ const Inventory = (props) => {
                                         />
                                     );
                                 }
+                                else if (props.typeProp === 'shop') {
+                                    return (
+                                        <Item
+                                            key={item.ItemId}
+                                            image={item.ImageURL}
+                                            name={item.shop}
+                                            onClick={props.buyFood()}
+                                        />
+                                    );
+                                }
                             })}
                         </div>
                     )}
