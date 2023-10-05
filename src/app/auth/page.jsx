@@ -30,6 +30,10 @@ export default function AuthLayout() {
         <div className="flex justify-center">
           <LiveTime labelClassName="text-white font-bold sm:text-[24px] text-[16px]" />
         </div>
+
+        <div className="text-white flex justify-center font-bold text-[24px]">
+          Login
+        </div>
         <div className="flex justify-center">
           <div className="m-4">
             {/* Login form */}

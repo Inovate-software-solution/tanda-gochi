@@ -5,13 +5,27 @@ import Success from "@/public/images/check-green.gif";
 import Failed from "@/public/images/error-img.gif";
 import TandaLogo from "@/components/General/TandaLogo";
 import LiveTime from "@/components/General/LiveTime";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
   const [idText, setIdText] = useState("");
 
   const [clocking, setClocking] = useState(true);
   const [success, setSuccess] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  //Use for triggering reload on gif
+  const [reloadKey, setReloadKey] = useState(0);
+
+  useEffect(() => {
+    const DeviceToken = localStorage.getItem("DeviceToken");
+    if (!DeviceToken) {
+      router.push("/auth");
+    }
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -22,6 +36,43 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [clocking]);
 
+  function DisplaySuccess() {
+    setClocking(false);
+    setSuccess(true);
+    setFailed(false);
+    setIdText("");
+  }
+
+  function DisplayFailed() {
+    setClocking(false);
+    setSuccess(false);
+    setFailed(true);
+    setIdText("");
+  }
+
+  function DisplayReset() {
+    setClocking(true);
+    setSuccess(false);
+    setFailed(false);
+    setIdText("");
+  }
+
+  async function ClockIn() {
+    await fetch(process.env.BACKEND_API + "/api/clockin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        DeviceToken: localStorage.getItem("DeviceToken"),
+        Passcode: idText,
+        GameResult: "win",
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => data);
+  }
+
   return (
     <div className="min-h-screen bg-bg_main bg-center bg-no-repeat flex justify-center sm:items-center min-w-full sm:min-w-0">
       <div
@@ -31,6 +82,7 @@ export default function Home() {
             : "min-h-screen w-full sm:min-h-0 rounded-none sm:w-[400px] sm:h-[650px] backdrop-blur-sm sm:rounded-3xl sm:items-start items-center flex justify-center bg-white"
         }
       >
+        {/* Input section */}
         {clocking ? (
           <div className="">
             <div className="flex justify-center mt-10">
@@ -42,11 +94,17 @@ export default function Home() {
             </div>
 
             <div className="flex justify-center m-4 text-[16px] sm:text-[24px] mt-2 px-6">
-              <input
-                className="w-full p-1 border-2 border-black"
-                readOnly
-                value={idText}
-              />
+              <div className="grid grid-cols-4">
+                {[0, 1, 2, 3].map((index) => (
+                  <div key={index} className="col-span-1 flex justify-center">
+                    <input
+                      className="p-1 m-2 w-[50px] h-[50px] border-2 border-black text-center font-bold text-white text-[42px]"
+                      readOnly
+                      value={idText.split("")[index] || ""}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="mx-6">
@@ -55,8 +113,12 @@ export default function Home() {
                   <div key={index} className="m-1 sm:m-1">
                     <div className="flex justify-center">
                       <button
-                        className="bg-white w-full sm:w-[70px] sm:h-[70px] text-[35px] sm:rounded-full hover:bg-slate-400"
-                        onClick={() => setIdText(idText + index)}
+                        className="bg-white text-blue-400 w-full sm:w-[70px] sm:h-[70px] text-[35px] sm:rounded-full hover:bg-slate-400"
+                        onClick={() => {
+                          if (idText.length < 4) {
+                            setIdText(idText + index);
+                          }
+                        }}
                       >
                         {index}
                       </button>
@@ -66,8 +128,12 @@ export default function Home() {
                 <div></div>
                 <div className="col-span-1 flex justify-center">
                   <button
-                    className="bg-white w-full sm:w-[70px] sm:h-[70px] text-[35px] sm:rounded-full m-1 sm:m-1 hover:bg-slate-400"
-                    onClick={() => setIdText(idText + "0")}
+                    className="bg-white text-blue-400 w-full sm:w-[70px] sm:h-[70px] text-[35px] sm:rounded-full m-1 sm:m-1 hover:bg-slate-400"
+                    onClick={() => {
+                      if (idText.length < 4) {
+                        setIdText(idText + 0);
+                      }
+                    }}
                   >
                     0
                   </button>
@@ -75,10 +141,10 @@ export default function Home() {
 
                 <div className="flex justify-center">
                   <button
-                    className="bg-white w-full sm:w-[70px] sm:h-[70px] text-[30px] sm:rounded-full m-1 sm:m-1 hover:bg-slate-400"
+                    className="bg-white w-full text-blue-400 sm:w-[70px] sm:h-[70px] text-[20px] sm:rounded-full m-1 sm:m-1 hover:bg-slate-400"
                     onClick={() => setIdText("")}
                   >
-                    Clear
+                    CLEAR
                   </button>
                 </div>
               </div>
@@ -86,18 +152,17 @@ export default function Home() {
 
             <div className="m-4 flex justify-center">
               <button
-                className="bg-teritary-60 hover:bg-teritary-40 text-[30px] px-8 rounded-full text-white"
-                onClick={() => {
-                  if (idText === "123456") {
-                    setClocking(false);
-                    setSuccess(true);
-                    setFailed(false);
-                    setIdText("");
+                className="bg-tertiary-60 hover:bg-tertiary-40 text-[30px] px-8 rounded-full text-white"
+                onClick={async () => {
+                  const response = await ClockIn();
+                  console.log(response);
+                  if (!response.error) {
+                    DisplaySuccess();
+                    setReloadKey((prevKey) => prevKey + 1); // Use functional form
                   } else {
-                    setClocking(false);
-                    setSuccess(false);
-                    setFailed(true);
-                    setIdText("");
+                    setErrorMessage(response.message);
+                    DisplayFailed();
+                    setReloadKey((prevKey) => prevKey + 1); // Use functional form
                   }
                 }}
               >
@@ -107,25 +172,24 @@ export default function Home() {
           </div>
         ) : null}
 
+        {/* Appear on success */}
         {success ? (
           <div className="h-full">
+            {/* Add the reloadKey as the key attribute */}
             <div className="w-[200px] h-[200px] mt-28">
-              <img src={Success.src} alt="Success tick" />
-            </div>
-            <div
-              className={`flex justify-center font-bold text-[30px] mt-8 transition-opacity duration-500 ${
-                success ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <label>Good morning</label>
+              <img src={Success.src} alt="Success tick" key={reloadKey} />
             </div>
 
-            <div className="m-4 flex justify-center mt-20">
+            <div className="flex justify-center font-bold text-green-600 text-[30px]">
+              Success!
+            </div>
+
+            <div className="flex justify-center">
               <button
-                className="bg-teritary-60 hover:bg-teritary-40 text-[30px] px-8 rounded-full text-white"
+                className="bg-tertiary-60 hover:bg-tertiary-40 text-[30px] px-8 rounded-full text-white mt-[120px]"
                 onClick={() => {
-                  setClocking(true);
-                  setSuccess(false);
+                  DisplayReset();
+                  setReloadKey(reloadKey + 1); // Increment the reloadKey
                 }}
               >
                 BACK
@@ -134,26 +198,24 @@ export default function Home() {
           </div>
         ) : null}
 
+        {/* Appear on failed */}
         {failed ? (
           <div className="h-full">
-            <div className=" mt-16">
-              <img src={Failed.src} alt="Success tick" />
-            </div>
-            <div
-              className={`flex justify-center font-bold text-[30px] mt-8 transition-opacity duration-500 ${
-                failed ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <label>Invalid ID number</label>
+            {/* Add the reloadKey as the key attribute */}
+            <div className="mt-16">
+              <img src={Failed.src} alt="Failed tick" key={reloadKey} />
             </div>
 
-            <div className="m-4 flex justify-center mt-20">
+            <div className="flex justify-center font-bold text-red-600 text-[30px]">
+              Invalid Passcode
+            </div>
+
+            <div className="flex justify-center">
               <button
-                className="bg-teritary-60 hover:bg-teritary-40 text-[30px] px-8 rounded-full text-white"
+                className="bg-tertiary-60 hover:bg-tertiary-40 text-[30px] px-8 rounded-full text-white mt-[120px]"
                 onClick={() => {
-                  setClocking(true);
-                  setSuccess(false);
-                  setFailed(false);
+                  DisplayReset();
+                  setReloadKey(reloadKey + 1); // Increment the reloadKey
                 }}
               >
                 BACK
