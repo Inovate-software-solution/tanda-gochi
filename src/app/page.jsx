@@ -58,7 +58,7 @@ export default function Home() {
   }
 
   async function ClockIn() {
-    await fetch(process.env.BACKEND_API + "/api/clockin", {
+    await fetch(process.env.BACKEND_API + "/clocking/clockin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
