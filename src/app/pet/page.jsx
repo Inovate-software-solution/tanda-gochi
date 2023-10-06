@@ -57,7 +57,7 @@ const Page = () => {
   const [outfitInventory, setOutfitInventory] = useState([]);
   const [credits, setCredits] = useState(10);
   const [lastInteracted, setLastInteracted] = useState();
-
+  const [id, setid] = useState();
   // Stats related states
   const [loneliness, setLoneliness] = useState(50);
   const [hungriness, setHungriness] = useState(50);
@@ -82,26 +82,27 @@ const Page = () => {
   const [windowTitle, setWindowTitle] = useState("");
   const [inventoryType, setInventoryType] = useState("");
 
-  // #### TO-DO ###
-  // Get the Current User's Inventory
-  // useEffect(() => {
-  //     fetch(`https://capstone.marcusnguyen.dev/api/Users/current/inventory`)
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data) {
-  //         setInventory(data.Inventory);
-  //         setOutfitInventory(data.OutfitInventory);
-  //         setToyInventory(data.ToysInventory);
-  //         setLastInteracted(data.LastInteracted);
-  //       }
-  //     })
-  //     .catch(error => {
-  //       setError(error);
-  //     })
-  //     .finally(() => {
-  //       setIsLoading(false);
-  //     })
-  // }, [])
+  // // #### TO-DO ###
+  // // Get the Current User's Inventory
+  // // useEffect(() => {
+  // //     fetch(`https://capstone.marcusnguyen.dev/api/Users/current/inventory`)
+  // //     .then((res) => res.json())
+  // //     .then((data) => {
+  // //       if (data) {
+
+  // //         setInventory(data.Inventory);
+  // //         setOutfitInventory(data.OutfitInventory);
+  // //         setToyInventory(data.ToysInventory);
+  // //         setLastInteracted(data.LastInteracted);
+  // //       }
+  // //     })
+  // //     .catch(error => {
+  // //       setError(error);
+  // //     })
+  // //     .finally(() => {
+  // //       setIsLoading(false);
+  // //     })
+  // // }, [])
 
   useEffect(() => {
     setInventory(mockItems.Inventory);
@@ -180,7 +181,37 @@ const Page = () => {
     }, 2000);
   };
 
+ 
+  useEffect(() => {
+    fetch(`https://capstone.marcusnguyen.dev/api/Users/current`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          setInventory(data); // Assuming data is the entire response
+          
+          data.Inventory.forEach((item) => {
+            if (item.ItemId === "651c0f1a9abd0bd9086f62c1" && item.Quantity > 0) {
+              setHasFood1(true);
+            }
+            else if (item.ItemId === "651fc03cdc8cf50d3edb1c81" && item.Quantity > 0) {
+              setHasFood2(true);
+            }
+            setCoins(data.Credits); // Assuming data.Credits is the property for credits
+            setid(data._id); // Assuming data._id is the property for user id
+          });
+        }
+      })
+      .catch((error) => {
+        setError(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
+  
+  
   const startEatAnimation = () => {
+ 
     if(hasFood1 && hasFood2){
     setIsEating(true);
     setTimeout(() => {
@@ -216,16 +247,52 @@ const Page = () => {
 
   const buyFood = (foodType) => {
     if (coins >= 10) {
-      // Assuming each food costs 10 coins
       setCoins(coins - 10);
-
-      if (foodType === 1) {
-        setHasFood1(true);
-      } else if (foodType === 2) {
-        setHasFood2(true);
-      }
+  
+      // First useEffect
+      useEffect(() => {
+        fetch(`https://capstone.marcusnguyen.dev/api/Users/addcredits`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            TargetUserId: id,
+            Credits: coins
+          })
+        })
+        .then((res) => res.json())
+        .then((data) => {
+          // Handle the response if needed
+        })
+        .catch((error) => {
+          setError(error);
+        });
+      }, [coins, id]); // Dependencies: coins and id
+  
+      
+      useEffect(() => {
+        fetch(`https://capstone.marcusnguyen.dev/api/User/action/buy/item`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            ItemId: '651c0f1a9abd0bd9086f62c1',
+            Quantity:1
+          })
+        })
+        .then((res) => res.json())
+        .then((data) => {
+          // Handle the response if needed
+        })
+        .catch((error) => {
+          setError(error);
+        });
+      }, [Quantity]); // Dependency: Quantity
     }
   };
+  
 
   {
     /* 
