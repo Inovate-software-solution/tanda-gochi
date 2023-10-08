@@ -157,18 +157,18 @@ const Page = () => {
   const animateWalking = () => {
     if (!(isDancing || isEating || isWearingHat||isplaying)) {
       const newPositionX = positionX + step * direction;
-      //console.log("x:", positionX);
+      
       if (newPositionX >= 250) {
         setDirection(-1);
         setPositionX(newPositionX);
-        //console.log("left:", positionX);
+        
       } else if (newPositionX <= -10) {
         setDirection(1);
         setPositionX(newPositionX);
-        //console.log("right:", positionX);
+        
       } else {
         setPositionX(newPositionX);
-        //console.log("isEating:", positionX);
+  
       }
     }
   };
@@ -187,8 +187,7 @@ const Page = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data) {
-          setInventory(data); // Assuming data is the entire response
-          
+          setInventory(data);
           data.Inventory.forEach((item) => {
             if (item.ItemId === "651c0f1a9abd0bd9086f62c1" && item.Quantity > 0) {
               setHasFood1(true);
@@ -196,8 +195,8 @@ const Page = () => {
             else if (item.ItemId === "651fc03cdc8cf50d3edb1c81" && item.Quantity > 0) {
               setHasFood2(true);
             }
-            setCoins(data.Credits); // Assuming data.Credits is the property for credits
-            setid(data._id); // Assuming data._id is the property for user id
+            setCoins(data.Credits);
+            setid(data._id); 
           });
         }
       })
@@ -263,7 +262,7 @@ const Page = () => {
         })
         .then((res) => res.json())
         .then((data) => {
-          // Handle the response if needed
+          
         })
         .catch((error) => {
           setError(error);
