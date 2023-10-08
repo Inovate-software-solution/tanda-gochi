@@ -7,14 +7,7 @@ const Inventory = (props) => {
     const [error, setError] = useState(null);
     const [isEating, setIsEating] = useState(false);
 
-    // #### TO-DO ###
-    // Handle shop
-    // if (props.typeProp === 'shop') {
-    //     useEffect(() => {
-    //         fetch(`'https://capstone.marcusnguyen.dev/api/items'`)
-    //         .then("do something about it")
-    //     })
-    // }
+    const baseURL = process.env.BACKEND_API;
 
     // Load items to display based on which button was pressed
     useEffect(() => {
@@ -24,6 +17,22 @@ const Inventory = (props) => {
             setItemsToDisplay(props.toyInventory);
         } else if (props.typeProp === 'outfit') {
             setItemsToDisplay(props.outfitInventory);
+        } else if (props.typeProp === 'shop') {
+            if (props.typeProp === 'shop') {
+                fetch(`https://capstone.marcusnguyen.dev/api/items`)
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data) {
+                        setItemsToDisplay(props.outfitInventory)
+                    }
+                  })
+                  .catch((error) => {
+                    setError(error);
+                  })
+                  .finally(() => {
+                    setIsLoading(false);
+                  })
+            }
         }
         console.log(itemsToDisplay);
     }, [props.typeProp, props.inventory, props.toyInventory, props.outfitInventory, itemsToDisplay]);
@@ -32,21 +41,65 @@ const Inventory = (props) => {
     // Need to search the loaded items from database to be able to load them
 
 
-    // const [items, setItems] = useState([]);
-    // useEffect(() => {
-    //     if (props.typeProp && type[props.typeProp]) {
-    //         setItems(type[props.typeProp]);
-    //     }
-    //     console.log(items);
-    // }, [props.typeProp]);
+    async function consumeFood (ItemId) {
+        try {
+            const response = await fetch(baseURL + "/User/action/use/item", {
+                method:"POST",
+                headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    "ItemId": ItemId
+                  }),
+            })
+        }
+        catch(error) {
+            setError(error)
+        }
+        finally {
+            setIsLoading(false)
+        }
+    }
 
-    // useEffect(() => {
-    //     if (isEating) {
-    //         setTimeout(() => {
-    //             setIsEating(false);
-    //         }, 3000); // Play the animation for 3 seconds
-    //     }
-    // }, [isEating]);
+    async function equipOutfit (OutfitId) {
+        try {
+            const response = await fetch(baseURL + "/User/action/equip/outfit", {
+                method:"POST",
+                headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    "OutfitId": OutfitId
+                  }),
+            })
+        }
+        catch(error) {
+            setError(error)
+        }
+        finally {
+            setIsLoading(false)
+        }
+    }
+
+    async function equipOutfit (OutfitId) {
+        try {
+            const response = await fetch(baseURL + "/User/action/equip/outfit", {
+                method:"POST",
+                headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    "OutfitId": OutfitId
+                  }),
+            })
+        }
+        catch(error) {
+            setError(error)
+        }
+        finally {
+            setIsLoading(false)
+        }
+    }
 
     return(
         <div className="h-screen flex justify-center">
@@ -85,7 +138,8 @@ const Inventory = (props) => {
                     )}
 
                     {!isLoading && (
-                        <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
+                        itemsToDisplay ? (
+                            <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
                             {itemsToDisplay.map(item => {
                                 if (props.typeProp === 'food') {
                                     return (
@@ -94,13 +148,13 @@ const Inventory = (props) => {
                                             image={item.ImageURL}
                                             name={item.ItemId}
                                             quantity={item.Quantity}
-                                            onClick={() => {props.startEatAnimation(); props.feedPet()}}
+                                            onClick={() => {props.startEatAnimation(); props.feedPet(); consumeFood(item.ItemId)}}
                                         />
                                     );
                                 } else if (props.typeProp === 'toy') {
                                     return (
                                         <Item
-                                            key={item.ItemId}
+                                            key={item.ToyId}
                                             image={item.ImageURL}
                                             name={item.ToyId}
                                             onClick={() => {props.startPlayAnimation(); props.playWithPet()}}
@@ -109,16 +163,32 @@ const Inventory = (props) => {
                                 } else if (props.typeProp === 'outfit') {
                                     return (
                                         <Item
-                                            key={item.ItemId}
+                                            key={item.OutfitId}
                                             image={item.ImageURL}
                                             name={item.OutfitId}
-                                            onClick={props.startWearHatAnimation()}
+                                            onClick={() => {props.startWearHatAnimation(); equipOutfit(item.OutfitId)}}
+                                        />
+                                    );
+                                } else if (props.typeProp === 'shop') {
+                                    // this is not working
+                                    return (
+                                        <Item
+                                            key={item.OutfitId}
+                                            image={item.ImageURL}
+                                            name={item.OutfitId}
+                                            onClick={() => {props.startWearHatAnimation(); equipOutfit(item.OutfitId)}}
                                         />
                                     );
                                 }
                               
                             })}
                         </div>
+                        ) : (
+                            <div className='alert alert-error mt-2'>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                            <span>No items yet ☹️. Earn some rewards and spoil your pet with fun goodies!</span>
+                        </div> 
+                        )
                     )}
                 </div>
             )}

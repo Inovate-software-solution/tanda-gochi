@@ -82,33 +82,42 @@ const Page = () => {
   const [windowTitle, setWindowTitle] = useState("");
   const [inventoryType, setInventoryType] = useState("");
 
-  // // #### TO-DO ###
-  // // Get the Current User's Inventory
-  // // useEffect(() => {
-  // //     fetch(`https://capstone.marcusnguyen.dev/api/Users/current/inventory`)
-  // //     .then((res) => res.json())
-  // //     .then((data) => {
-  // //       if (data) {
-
-  // //         setInventory(data.Inventory);
-  // //         setOutfitInventory(data.OutfitInventory);
-  // //         setToyInventory(data.ToysInventory);
-  // //         setLastInteracted(data.LastInteracted);
-  // //       }
-  // //     })
-  // //     .catch(error => {
-  // //       setError(error);
-  // //     })
-  // //     .finally(() => {
-  // //       setIsLoading(false);
-  // //     })
-  // // }, [])
-
+   // Get the Current User's Inventory
   useEffect(() => {
-    setInventory(mockItems.Inventory);
-    setToyInventory(mockItems.ToysInventory);
-    setOutfitInventory(mockItems.OutfitsInventory);
+    fetch(`https://capstone.marcusnguyen.dev/api/Users/current`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          setCredits(data.Credits);
+          setInventory(data.Inventory);
+          setOutfitInventory(data.OutfitInventory);
+          setToyInventory(data.ToysInventory);
+          setLastInteracted(data.LastInteracted);
+          setLastInteracted(data.LastInteracted);
+          if (lastInteracted !== undefined) {
+            const timePast = Date.now() - lastInteracted;
+            const newStats = (timePast / (1000 * 60 * 60)) * 3
+            setHungriness(newStats + hungriness);
+            setLoneliness(newStats + loneliness);
+          } else {
+            setHungriness(50);
+            setLoneliness(50);
+          }
+        }
+      })
+      .catch((error) => {
+        setError(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
+
+  // useEffect(() => {
+  //   setInventory(mockItems.Inventory);
+  //   setToyInventory(mockItems.ToysInventory);
+  //   setOutfitInventory(mockItems.OutfitsInventory);
+  // }, []);
 
   useEffect(() => {
     const animationId = requestAnimationFrame(animateWalking);
@@ -121,20 +130,6 @@ const Page = () => {
       clearInterval(autoDanceInterval);
     };
   }, [positionX, direction, isDancing, isEating, isWearingHat]);
-
-  // #### TO-DO ###
-  // Calculate fullness and happiness WIP
-  /*
-    On a second thought, fullness and happiness should be changed to something 
-    like hungriness and loneliness which increase over time. This way we don't 
-    need to store their previous value, and items will just decress these stats.
-  */
-  // if (lastInteracted !== undefined) {
-  //   const timePast = Date.now() - lastInteracted;
-  //   const newStats = (timePast / (1000 * 60 * 60)) * 3
-  //   setHungriness(newStats + hungriness);
-  //   setLoneliness(newStats + loneliness);
-  // }
 
   // Stats related functions
   const feedPet = () => {
@@ -180,34 +175,6 @@ const Page = () => {
       setIsEating(false);
     }, 2000);
   };
-
- 
-  useEffect(() => {
-    fetch(`https://capstone.marcusnguyen.dev/api/Users/current`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data) {
-          setInventory(data);
-          data.Inventory.forEach((item) => {
-            if (item.ItemId === "651c0f1a9abd0bd9086f62c1" && item.Quantity > 0) {
-              setHasFood1(true);
-            }
-            else if (item.ItemId === "651fc03cdc8cf50d3edb1c81" && item.Quantity > 0) {
-              setHasFood2(true);
-            }
-            setCoins(data.Credits);
-            setid(data._id); 
-          });
-        }
-      })
-      .catch((error) => {
-        setError(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
-  
   
   const startEatAnimation = () => {
  
@@ -291,18 +258,6 @@ const Page = () => {
       }, [Quantity]); // Dependency: Quantity
     }
   };
-  
-
-  {
-    /* 
-  <button className="btn btn-success px-2 px-4 py-2" onClick={() => buyFood(1)} disabled={coins < 10 || hasFood1}>
-    Buy Food 1
-  </button>
-  <button className="btn btn-success px-2 px-4 py-2" onClick={() => buyFood(2)} disabled={coins < 10 || hasFood2}>
-    Buy Food 2
-  </button> 
-  */
-  }
 
   // UI related functions
   const toggleWindow = (title = "", type = "") => {
