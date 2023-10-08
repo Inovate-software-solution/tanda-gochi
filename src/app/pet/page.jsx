@@ -3,7 +3,7 @@
 import Sidebar from "../../../components/Info/Sidebar";
 import Inventory from "../../../components/Pet/Inventory";
 import React, { useEffect, useState } from "react";
-import eatbanana from "@/public/images/eatbanana.gif"
+import eatbanana from "@/public/images/eatbanana.gif";
 import rightwalkingImage from "../../../public/images/walk.gif";
 import leftwalkingImage from "../../../public/images/walkleft.gif";
 import addOilImage from "../../../public/images/addoil.gif";
@@ -82,7 +82,33 @@ const Page = () => {
   const [windowTitle, setWindowTitle] = useState("");
   const [inventoryType, setInventoryType] = useState("");
 
-   // Get the Current User's Inventory
+  const [ToysWindow, setToysWindow] = useState(false);
+  const [ItemWindow, setItemWindow] = useState(false);
+  const [OutfitWindow, setOutfitWindow] = useState(false);
+
+  function ToggleWindow(window) {
+    if (window == "Toys") {
+      setToysWindow(false);
+      setItemWindow(false);
+      setOutfitWindow(false);
+
+      setToysWindow(true);
+    } else if (window == "Item") {
+      setToysWindow(false);
+      setItemWindow(false);
+      setOutfitWindow(false);
+
+      setItemWindow(true);
+    } else if (window == "Outfit") {
+      setToysWindow(false);
+      setItemWindow(false);
+      setOutfitWindow(false);
+
+      setOutfitWindow(true);
+    }
+  }
+
+  // Get the Current User's Inventory
   useEffect(() => {
     fetch(`https://capstone.marcusnguyen.dev/api/Users/current`)
       .then((res) => res.json())
@@ -96,7 +122,7 @@ const Page = () => {
           setLastInteracted(data.LastInteracted);
           if (lastInteracted !== undefined) {
             const timePast = Date.now() - lastInteracted;
-            const newStats = (timePast / (1000 * 60 * 60)) * 3
+            const newStats = (timePast / (1000 * 60 * 60)) * 3;
             setHungriness(newStats + hungriness);
             setLoneliness(newStats + loneliness);
           } else {
@@ -150,20 +176,17 @@ const Page = () => {
   };
 
   const animateWalking = () => {
-    if (!(isDancing || isEating || isWearingHat||isplaying)) {
+    if (!(isDancing || isEating || isWearingHat || isplaying)) {
       const newPositionX = positionX + step * direction;
-      
+
       if (newPositionX >= 250) {
         setDirection(-1);
         setPositionX(newPositionX);
-        
       } else if (newPositionX <= -10) {
         setDirection(1);
         setPositionX(newPositionX);
-        
       } else {
         setPositionX(newPositionX);
-  
       }
     }
   };
@@ -175,17 +198,17 @@ const Page = () => {
       setIsEating(false);
     }, 2000);
   };
-  
+
   const startEatAnimation = () => {
- 
-    if(hasFood1 && hasFood2){
-    setIsEating(true);
-    setTimeout(() => {
-      setIsEating(false);
-      setIsDancing(false);
-      setDirection(1);
-      requestAnimationFrame(animateWalking);
-    }, 4000);}
+    if (hasFood1 && hasFood2) {
+      setIsEating(true);
+      setTimeout(() => {
+        setIsEating(false);
+        setIsDancing(false);
+        setDirection(1);
+        requestAnimationFrame(animateWalking);
+      }, 4000);
+    }
   };
 
   const startPlayAnimation = () => {
@@ -214,47 +237,44 @@ const Page = () => {
   const buyFood = (foodType) => {
     if (coins >= 10) {
       setCoins(coins - 10);
-  
+
       // First useEffect
       useEffect(() => {
         fetch(`https://capstone.marcusnguyen.dev/api/Users/addcredits`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             TargetUserId: id,
-            Credits: coins
-          })
+            Credits: coins,
+          }),
         })
-        .then((res) => res.json())
-        .then((data) => {
-          
-        })
-        .catch((error) => {
-          setError(error);
-        });
+          .then((res) => res.json())
+          .then((data) => {})
+          .catch((error) => {
+            setError(error);
+          });
       }, [coins, id]); // Dependencies: coins and id
-  
-      
+
       useEffect(() => {
         fetch(`https://capstone.marcusnguyen.dev/api/User/action/buy/item`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            ItemId: '651c0f1a9abd0bd9086f62c1',
-            Quantity:1
+            ItemId: "651c0f1a9abd0bd9086f62c1",
+            Quantity: 1,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            // Handle the response if needed
           })
-        })
-        .then((res) => res.json())
-        .then((data) => {
-          // Handle the response if needed
-        })
-        .catch((error) => {
-          setError(error);
-        });
+          .catch((error) => {
+            setError(error);
+          });
       }, [Quantity]); // Dependency: Quantity
     }
   };
@@ -312,10 +332,9 @@ const Page = () => {
                   <img
                     src={
                       isEating
-                      ? hasFood1
-                        ? eatImage.src
-                        :eatbanana.src
-                          
+                        ? hasFood1
+                          ? eatImage.src
+                          : eatbanana.src
                         : isplaying
                         ? playImage.src
                         : isDancing
@@ -373,6 +392,8 @@ const Page = () => {
                 ></progress>
                 <p className="text-xs mt-1">{hungriness}%</p>
               </div>
+
+              {ToysWindow ? <div>Actual Toys windows</div> : null}
 
               <div className="flex space-x-4 mt-4 md:mt-0">
                 <button
