@@ -15,70 +15,52 @@ const Inventory = (props) => {
 
   // Load items to display based on which button was pressed
   useEffect(() => {
+    const token = sessionStorage.getItem('jwt');
+    if (!token) {
+        console.error("No JWT token found in session storage.");
+        return;
+    }
+
     if (props.typeProp === "Food") {
-      setItemsToDisplay(props.inventory);
+      setItemsToDisplay(props.userData.inventory);
     } else if (props.typeProp === "Toys") {
-      setItemsToDisplay(props.toyInventory);
-    } else if (props.typeProp === "Outfit") {
-      setItemsToDisplay(props.outfitInventory);
+      setItemsToDisplay(props.userData.toyInventory);
+    } else if (props.typeProp === "Outfits") {
+      setItemsToDisplay(props.userData.outfitInventory);
     } else if (props.typeProp === "Shop") {
-        // fetch(`https://capstone.marcusnguyen.dev/api/items`)
-        //   .then((res) => res.json())
-        //   .then((data) => {
-        //     if (data) {
-        //       setItemsToDisplay(props.outfitInventory);
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     setError(error);
-        //   })
-        //   .finally(() => {
-        //     setIsLoading(false);
-        //   });
-        // const config = {
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //         "Authorization": "Bearer " + localStorage.getItem("token")
-        //     }
-        // }
+      const config = {
+        method: 'GET',
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+      };
 
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer " +
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NTFhZTc0MTUwZjEyMGMyMmI5MTJlNTIiLCJFbWFpbCI6ImRlbW9hY2NvdW50KzE5OTA4N0B0YW5kYS5jbyIsIlNjb3BlcyI6WyJ1c2VyIiwiYWRtaW4iXSwiaWF0IjoxNjk2NzY0MzYzLCJleHAiOjE2OTY4NTA3NjN9.S75jKYRKqwXXAV0lfR4Xk6w-45cBTS6kQMdOF0v6Ifo",
-          },
-        };
-
-        async () => {
-          await Promise.all([
-            fetch(process.env.BACKEND_API + "/items", config).then((res) =>
-              res.json()
-            ),
-            fetch(process.env.BACKEND_API + "/outfits", config).then((res) =>
-              res.json()
-            ),
-            fetch(process.env.BACKEND_API + "/toys", config).then((res) =>
-              res.json()
-            ),
-          ]).then(([items, outfits, toys]) => {
-            setItems(items);
-            setOutfits(outfits);
-            setToys(toys);
-          });
-        };
-
-        console.log(items);
-
+      Promise.all([
+          fetch(process.env.BACKEND_API + "/items", config).then((res) => res.json()),
+          fetch(process.env.BACKEND_API + "/outfits", config).then((res) => res.json()),
+          fetch(process.env.BACKEND_API + "/toys", config).then((res) => res.json())
+      ]).then(([itemsData, outfitsData, toysData]) => {
+          setItems(itemsData);
+          setOutfits(outfitsData);
+          setToys(toysData);
+      }).catch(error => {
+          console.error("Error fetching data:", error);
+      });
     }
   }, [
     props.typeProp,
-    props.inventory,
-    props.toyInventory,
-    props.outfitInventory,
-    itemsToDisplay,
+    props.userData.inventory,
+    props.userData.toyInventory,
+    props.userData.outfitInventory
   ]);
+
+  // for testing
+  useEffect(() => {
+    console.log(items);
+    console.log(outfits);
+    console.log(toys);
+  }, [items, outfits, toys]);
+
 
   // #### TO-DO ###
   // Need to search the loaded items from database to be able to load them
@@ -97,6 +79,7 @@ const Inventory = (props) => {
     } catch (error) {
       setError(error);
     } finally {
+      props.feedPet();
       setIsLoading(false);
     }
   }
@@ -119,23 +102,17 @@ const Inventory = (props) => {
     }
   }
 
-  async function equipOutfit(OutfitId) {
+  async function buyFood(id) {
     try {
-      const response = await fetch(baseURL + "/User/action/equip/outfit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          OutfitId: OutfitId,
-        }),
-      });
+       
     } catch (error) {
       setError(error);
     } finally {
       setIsLoading(false);
     }
   }
+
+  
 
   return (
     <div className="h-screen flex justify-center">
@@ -152,9 +129,9 @@ const Inventory = (props) => {
         >
           <div className="flex justify-between flex-col md:flex-row">
             <h2 className="text-base font-bold md:text-base lg:text-lg xl:text-xl mb-4">
-              {props.titleProp}
+              {props.typeProp}
             </h2>
-            {props.titleProp === "Shop" && (
+            {props.typeProp === "Shop" && (
               <div className="sm:text-sm md:text-base flex items-center">
                 <img
                   src="/images/coinGold.png"
@@ -163,7 +140,7 @@ const Inventory = (props) => {
                   height={30}
                   style={{ marginRight: "10px" }}
                 />
-                Credits: {props.credits}
+                Credits: {props.userData.credits}
               </div>
             )}
             <button
@@ -218,7 +195,7 @@ const Inventory = (props) => {
           )}
 
           {!isLoading &&
-            (itemsToDisplay ? (
+            (itemsToDisplay.length ? (
               <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
                 {itemsToDisplay.map((item) => {
                   if (props.typeProp === "Food") {
@@ -230,7 +207,6 @@ const Inventory = (props) => {
                         quantity={item.Quantity}
                         onClick={() => {
                           props.startEatAnimation();
-                          props.feedPet();
                           consumeFood(item.ItemId);
                         }}
                       />
@@ -259,55 +235,62 @@ const Inventory = (props) => {
                         }}
                       />
                     );
-                  } else if (props.typeProp === "Shop") {
-                    // this is not working
-                    return (
-                      <div key={item.OutfitId}>
-                        {items.map(e, (index) => {
-                          <button
-                            onClick={() => {
-                              fetch("items");
-                            }}
-                          ></button>;
-                        })}
-
-                        {outfits.map((e, index) => {})}
-
-                        {toys.map((e, index) => {})}
-
-                        <Item
-                          key={item.OutfitId}
-                          image={item.ImageURL}
-                          name={item.OutfitId}
-                          onClick={() => {
-                            props.startWearHatAnimation();
-                            equipOutfit(item.OutfitId);
-                          }}
-                        />
-                      </div>
-                    );
                   }
                 })}
               </div>
             ) : (
-              <div className="alert alert-error mt-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="stroke-current shrink-0 h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-                <span>
-                  No items yet ☹️. Earn some rewards and spoil your pet with fun
-                  goodies!
-                </span>
+              <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
+                {props.typeProp === "Shop" && (
+                  <div>
+                    {items.map((item, index) => (
+                      <Item
+                        key={item._id}
+                        image={item.ImageURL}
+                        name={item.Name}
+                        onClick={() => buyFood(item._id)}
+                      />
+                    ))}
+
+                    {outfits.map((item, index) => (
+                      <Item
+                        key={item._id}
+                        image={item.ImageURL}
+                        name={item.Name}
+                        onClick={() => buyOutfit(item._id)}
+                      />
+                    ))}
+
+                    {toys.map((item, index) => (
+                      <Item
+                        key={item._id}
+                        image={item.ImageURL}
+                        name={item.Name}
+                        onClick={() => buyToy(item._id)}
+                      />
+                    ))}
+                  </div>
+                )}
+                {props.typeProp !== "Shop" && (
+                  <div className="alert alert-error mt-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="stroke-current shrink-0 h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
+                    </svg>
+                    <span>
+                      No items yet ☹️. Earn some credits and spoil your pet with fun
+                      goodies!
+                    </span>
+                  </div>
+                )}
               </div>
             ))}
         </div>

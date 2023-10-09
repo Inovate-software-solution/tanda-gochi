@@ -19,11 +19,12 @@ const Page = () => {
   // API related states
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [inventory, setInventory] = useState([]);
-  const [toyInventory, setToyInventory] = useState([]);
-  const [outfitInventory, setOutfitInventory] = useState([]);
-  const [credits, setCredits] = useState(10);
-  const [lastInteracted, setLastInteracted] = useState();
+  const [userData, setUserData] = useState([]);
+  // const [inventory, setInventory] = useState([]);
+  // const [toyInventory, setToyInventory] = useState([]);
+  // const [outfitInventory, setOutfitInventory] = useState([]);
+  // const [credits, setCredits] = useState();
+  // const [lastInteracted, setLastInteracted] = useState();
 
   // Stats related states
   const [loneliness, setLoneliness] = useState(50);
@@ -46,7 +47,6 @@ const Page = () => {
 
   // UI related states
   const [isWindowVisible, setWindowVisible] = useState(false);
-  const [windowTitle, setWindowTitle] = useState("");
   const [inventoryType, setInventoryType] = useState("");
 
   const [useToysWindow, setUseToysWindow] = useState(false);
@@ -56,34 +56,47 @@ const Page = () => {
 
   // Get the Current User's Inventory
   useEffect(() => {
-    fetch(`https://capstone.marcusnguyen.dev/api/Users/current`)
-      .then((res) => res.json())
-      .then((data) => {
+    const token = sessionStorage.getItem('jwt');
+    if (!token) {
+        console.error("No JWT token found in session storage.");
+        return;
+    }
+    
+    fetch(`https://capstone.marcusnguyen.dev/api/Users/current`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then((res) => res.json())
+    .then((data) => {
         if (data) {
-          setCredits(data.Credits);
-          setInventory(data.Inventory);
-          setOutfitInventory(data.OutfitInventory);
-          setToyInventory(data.ToysInventory);
-          setLastInteracted(data.LastInteracted);
-          console.log(sessionStorage.getItem('username'));
-          if (lastInteracted !== undefined) {
-            const timePast = Date.now() - lastInteracted;
-            const newStats = (timePast / (1000 * 60 * 60)) * 3;
-            setHungriness(newStats + hungriness);
-            setLoneliness(newStats + loneliness);
+          setUserData(data)
+          // setCredits(data.Credits || 0);
+          // setInventory(data.Inventory || []);
+          // setOutfitInventory(data.OutfitInventory || []);
+          // setToyInventory(data.ToysInventory || []);
+          // setLastInteracted(data.LastInteracted);
+            
+          if (data.LastInteracted) {
+              const timePast = Date.now() - data.LastInteracted;
+              const newStats = (timePast / (1000 * 60 * 60)) * 3;
+              setHungriness(prevHungriness => newStats + prevHungriness);
+              setLoneliness(prevLoneliness => newStats + prevLoneliness);
           } else {
-            setHungriness(50);
-            setLoneliness(50);
+              setHungriness(50);
+              setLoneliness(50);
           }
         }
-      })
-      .catch((error) => {
+    })
+    .catch((error) => {
         setError(error);
-      })
-      .finally(() => {
+    })
+    .finally(() => {
         setIsLoading(false);
-      });
-  }, []);
+    });
+    }, []);
+
 
   useEffect(() => {
     const animationId = requestAnimationFrame(animateWalking);
@@ -175,8 +188,7 @@ const Page = () => {
   };
 
   // UI related functions
-  function toggleWindow(title, windowToUse) {
-    setWindowTitle(title);
+  function toggleWindow(windowToUse) {
     setInventoryType(windowToUse);
     setWindowVisible(!isWindowVisible);
     if (windowToUse == "Toys") {
@@ -189,7 +201,7 @@ const Page = () => {
       setUseItemWindow(true);
       setUseOutfitWindow(false);
       setUseShopWindow(false);
-    } else if (windowToUse == "Outfit") {
+    } else if (windowToUse == "Outfits") {
       setUseToysWindow(false);
       setUseItemWindow(false);
       setUseOutfitWindow(true);
@@ -214,18 +226,14 @@ const Page = () => {
             >
               <Inventory
                 visibilityProp={isWindowVisible}
-                titleProp={windowTitle}
                 toggleProp={toggleWindow}
                 typeProp={inventoryType}
                 startEatAnimation={startEatAnimation}
                 startPlayAnimation={startPlayAnimation}
                 startWearHatAnimation={startWearHatAnimation}
-                credits={credits}
-                inventory={inventory}
-                outfitInventory={outfitInventory}
-                toyInventory={toyInventory}
                 feedPet={feedPet}
                 playWithPet={playWithPet}
+                userData={userData}
               />
               <div
                 style={{
@@ -309,13 +317,13 @@ const Page = () => {
                 <p className="text-xs mt-1">{hungriness}%</p>
               </div>
 
-              {useToysWindow ? <div>Actual Toys windows</div> : null}
+              {/* {useToysWindow ? <div>Actual Toys windows</div> : null} */}
 
               <div className="flex space-x-4 mt-4 md:mt-0">
                 <button
                   className="btn btn-info px-2 md:px-4 py-2"
                   onClick={() => {
-                    toggleWindow("Toys", "toy");
+                    toggleWindow("Toys");
                   }}
                 >
                   Toys
@@ -323,20 +331,20 @@ const Page = () => {
                 <button
                   className="btn btn-primary px-2 px-4 py-2"
                   onClick={() => {
-                    toggleWindow("Food", "food");
+                    toggleWindow("Food");
                   }}
                 >
                   Food
                 </button>
                 <button
                   className="btn btn-warning px-2 px-4 py-2"
-                  onClick={() => toggleWindow("Outfits", "outfit")}
+                  onClick={() => toggleWindow("Outfits")}
                 >
                   Outfits
                 </button>
                 <button
                   className="btn btn-error px-2 px-4 py-2"
-                  onClick={() => toggleWindow("Shop", "shop")}
+                  onClick={() => toggleWindow("Shop")}
                 >
                   Shop
                 </button>
