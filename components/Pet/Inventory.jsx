@@ -195,7 +195,7 @@ const Inventory = (props) => {
           )}
 
           {!isLoading &&
-            (itemsToDisplay.length ? (
+            (itemsToDisplay !== undefined ? (
               <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
                 {itemsToDisplay.map((item) => {
                   if (props.typeProp === "Food") {
@@ -240,38 +240,32 @@ const Inventory = (props) => {
               </div>
             ) : (
               <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
-                {props.typeProp === "Shop" && (
-                  <div>
-                    {items.map((item, index) => (
-                      <Item
-                        key={item._id}
-                        image={item.ImageURL}
-                        name={item.Name}
-                        onClick={() => buyFood(item._id)}
-                      />
-                    ))}
-
-                    {outfits.map((item, index) => (
-                      <Item
-                        key={item._id}
-                        image={item.ImageURL}
-                        name={item.Name}
-                        onClick={() => buyOutfit(item._id)}
-                      />
-                    ))}
-
-                    {toys.map((item, index) => (
-                      <Item
-                        key={item._id}
-                        image={item.ImageURL}
-                        name={item.Name}
-                        onClick={() => buyToy(item._id)}
-                      />
-                    ))}
-                  </div>
-                )}
+                {props.typeProp === "Shop" && items.map((item, index) => (
+                  <Item
+                    key={item._id}
+                    image={item.ImageURL}
+                    name={item.Name}
+                    onClick={() => buyFood(item._id)}
+                  />
+                ))}
+                {props.typeProp === "Shop" && outfits.map((item, index) => (
+                  <Item
+                    key={item._id}
+                    image={item.ImageURL}
+                    name={item.Name}
+                    onClick={() => buyOutfit(item._id)}
+                  />
+                ))}
+                {props.typeProp === "Shop" && toys.map((item, index) => (
+                  <Item
+                    key={item._id}
+                    image={item.ImageURL}
+                    name={item.Name}
+                    onClick={() => buyToy(item._id)}
+                  />
+                ))}
                 {props.typeProp !== "Shop" && (
-                  <div className="alert alert-error mt-2">
+                  <div className="alert alert-error mt-2 col-span-4">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="stroke-current shrink-0 h-6 w-6"
