@@ -15,14 +15,13 @@ const Inventory = (props) => {
 
   // Load items to display based on which button was pressed
   useEffect(() => {
-    if (props.typeProp === "food") {
+    if (props.typeProp === "Food") {
       setItemsToDisplay(props.inventory);
-    } else if (props.typeProp === "toy") {
+    } else if (props.typeProp === "Toys") {
       setItemsToDisplay(props.toyInventory);
-    } else if (props.typeProp === "outfit") {
+    } else if (props.typeProp === "Outfit") {
       setItemsToDisplay(props.outfitInventory);
-    } else if (props.typeProp === "shop") {
-      if (props.typeProp === "shop") {
+    } else if (props.typeProp === "Shop") {
         // fetch(`https://capstone.marcusnguyen.dev/api/items`)
         //   .then((res) => res.json())
         //   .then((data) => {
@@ -71,7 +70,7 @@ const Inventory = (props) => {
         };
 
         console.log(items);
-      }
+
     }
   }, [
     props.typeProp,
@@ -222,7 +221,7 @@ const Inventory = (props) => {
             (itemsToDisplay ? (
               <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
                 {itemsToDisplay.map((item) => {
-                  if (props.typeProp === "food") {
+                  if (props.typeProp === "Food") {
                     return (
                       <Item
                         key={item.ItemId}
@@ -236,7 +235,7 @@ const Inventory = (props) => {
                         }}
                       />
                     );
-                  } else if (props.typeProp === "toy") {
+                  } else if (props.typeProp === "Toys") {
                     return (
                       <Item
                         key={item.ToyId}
@@ -248,7 +247,7 @@ const Inventory = (props) => {
                         }}
                       />
                     );
-                  } else if (props.typeProp === "outfit") {
+                  } else if (props.typeProp === "Outfit") {
                     return (
                       <Item
                         key={item.OutfitId}
@@ -260,7 +259,7 @@ const Inventory = (props) => {
                         }}
                       />
                     );
-                  } else if (props.typeProp === "shop") {
+                  } else if (props.typeProp === "Shop") {
                     // this is not working
                     return (
                       <div key={item.OutfitId}>

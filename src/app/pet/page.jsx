@@ -3,6 +3,8 @@
 import Sidebar from "../../../components/Info/Sidebar";
 import Inventory from "../../../components/Pet/Inventory";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 import eatbanana from "@/public/images/eatbanana.gif";
 import rightwalkingImage from "../../../public/images/walk.gif";
 import leftwalkingImage from "../../../public/images/walkleft.gif";
@@ -12,41 +14,6 @@ import walkImageWithHat from "../../../public/images/walkhat.gif";
 import walkLeftImageWithHat from "../../../public/images/walklefthat.gif";
 import wearHatImage from "../../../public/images/wearhat.gif";
 import playImage from "@/public/images/playball.gif";
-import Image from "next/image";
-import Item from "@/components/Pet/Item.jsx";
-
-// For testing purpose
-const mockItems = {
-  ToysInventory: [
-    {
-      ToyId: "TestToy1",
-    },
-    {
-      ToyId: "TestToy2",
-    },
-  ],
-  Inventory: [
-    {
-      ItemId: "TestFood1",
-      Quantity: 3,
-    },
-    {
-      ItemId: "TestFood2",
-      Quantity: 1,
-    },
-  ],
-  OutfitsInventory: [
-    {
-      OutfitId: "TestOutfit1",
-      Equipped: false,
-    },
-    {
-      OutfitId: "TestOutfit2",
-      Equipped: false,
-    },
-  ],
-  pets: [],
-};
 
 const Page = () => {
   // API related states
@@ -57,7 +24,7 @@ const Page = () => {
   const [outfitInventory, setOutfitInventory] = useState([]);
   const [credits, setCredits] = useState(10);
   const [lastInteracted, setLastInteracted] = useState();
-  const [id, setid] = useState();
+
   // Stats related states
   const [loneliness, setLoneliness] = useState(50);
   const [hungriness, setHungriness] = useState(50);
@@ -82,31 +49,10 @@ const Page = () => {
   const [windowTitle, setWindowTitle] = useState("");
   const [inventoryType, setInventoryType] = useState("");
 
-  const [ToysWindow, setToysWindow] = useState(false);
-  const [ItemWindow, setItemWindow] = useState(false);
-  const [OutfitWindow, setOutfitWindow] = useState(false);
-
-  function ToggleWindow(window) {
-    if (window == "Toys") {
-      setToysWindow(false);
-      setItemWindow(false);
-      setOutfitWindow(false);
-
-      setToysWindow(true);
-    } else if (window == "Item") {
-      setToysWindow(false);
-      setItemWindow(false);
-      setOutfitWindow(false);
-
-      setItemWindow(true);
-    } else if (window == "Outfit") {
-      setToysWindow(false);
-      setItemWindow(false);
-      setOutfitWindow(false);
-
-      setOutfitWindow(true);
-    }
-  }
+  const [useToysWindow, setUseToysWindow] = useState(false);
+  const [useItemWindow, setUseItemWindow] = useState(false);
+  const [useOutfitWindow, setUseOutfitWindow] = useState(false);
+  const [useShopWindow, setUseShopWindow] = useState(false);
 
   // Get the Current User's Inventory
   useEffect(() => {
@@ -119,7 +65,7 @@ const Page = () => {
           setOutfitInventory(data.OutfitInventory);
           setToyInventory(data.ToysInventory);
           setLastInteracted(data.LastInteracted);
-          setLastInteracted(data.LastInteracted);
+          console.log(sessionStorage.getItem('username'));
           if (lastInteracted !== undefined) {
             const timePast = Date.now() - lastInteracted;
             const newStats = (timePast / (1000 * 60 * 60)) * 3;
@@ -138,12 +84,6 @@ const Page = () => {
         setIsLoading(false);
       });
   }, []);
-
-  // useEffect(() => {
-  //   setInventory(mockItems.Inventory);
-  //   setToyInventory(mockItems.ToysInventory);
-  //   setOutfitInventory(mockItems.OutfitsInventory);
-  // }, []);
 
   useEffect(() => {
     const animationId = requestAnimationFrame(animateWalking);
@@ -234,57 +174,33 @@ const Page = () => {
     }, 500);
   };
 
-  const buyFood = (foodType) => {
-    if (coins >= 10) {
-      setCoins(coins - 10);
-
-      // First useEffect
-      useEffect(() => {
-        fetch(`https://capstone.marcusnguyen.dev/api/Users/addcredits`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            TargetUserId: id,
-            Credits: coins,
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {})
-          .catch((error) => {
-            setError(error);
-          });
-      }, [coins, id]); // Dependencies: coins and id
-
-      useEffect(() => {
-        fetch(`https://capstone.marcusnguyen.dev/api/User/action/buy/item`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ItemId: "651c0f1a9abd0bd9086f62c1",
-            Quantity: 1,
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            // Handle the response if needed
-          })
-          .catch((error) => {
-            setError(error);
-          });
-      }, [Quantity]); // Dependency: Quantity
-    }
-  };
-
   // UI related functions
-  const toggleWindow = (title = "", type = "") => {
+  function toggleWindow(title, windowToUse) {
     setWindowTitle(title);
-    setInventoryType(type);
+    setInventoryType(windowToUse);
     setWindowVisible(!isWindowVisible);
-  };
+    if (windowToUse == "Toys") {
+      setUseToysWindow(true);
+      setUseItemWindow(false);
+      setUseOutfitWindow(false);
+      setUseShopWindow(false);
+    } else if (windowToUse == "Food") {
+      setUseToysWindow(false);
+      setUseItemWindow(true);
+      setUseOutfitWindow(false);
+      setUseShopWindow(false);
+    } else if (windowToUse == "Outfit") {
+      setUseToysWindow(false);
+      setUseItemWindow(false);
+      setUseOutfitWindow(true);
+      setUseShopWindow(false);
+    } else if (windowToUse == "Shop") {
+      setUseToysWindow(false);
+      setUseItemWindow(false);
+      setUseOutfitWindow(false);
+      setUseShopWindow(true);
+    }
+  }
 
   return (
     <div className="overflow-x-hidden" data-theme="emerald">
@@ -393,7 +309,7 @@ const Page = () => {
                 <p className="text-xs mt-1">{hungriness}%</p>
               </div>
 
-              {ToysWindow ? <div>Actual Toys windows</div> : null}
+              {useToysWindow ? <div>Actual Toys windows</div> : null}
 
               <div className="flex space-x-4 mt-4 md:mt-0">
                 <button
