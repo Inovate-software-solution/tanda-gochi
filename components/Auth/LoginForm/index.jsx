@@ -1,76 +1,63 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { RootState } from "@/store/store";
-import { setUserData } from "@/store/reducers/userSlice";
-import axios from "axios";
 
-export default function LoginForm() {
-  const [formValue, setFormValue] = useState({
-    username: "",
-    password: "",
-  });
-
-  const dispatch = useDispatch();
-  const baseURL = process.env.BACKEND_API;
-  const handleValueChange = (e) => {
-    e.preventDefault();
-    setFormValue((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form submitted with formValue:", formValue);
-    const user = {
-      username: formValue.username,
-      password: formValue.password,
-      companyid: 1,
-    };
-
-    console.log(baseURL);
-    axios
-      .post(`${baseURL}/login`, user)
-      .then((res) => {
-        console.log(res.data);
-        console.log(user);
-        console.log(user.username);
-        dispatch(setUserData(user.username));
-        sessionStorage.setItem("username", user.username);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const testing = (e) => {
-    dispatch(setUserData("Something"));
-  };
+export default function LoginForm(props) {
   return (
     <div className="">
-      <form onSubmit={handleSubmit}>
+      <form>
         <div>
-          <label className="text-primary-100 font-bold">Username:</label>
-          <br />
-          <input type="text" name="username" onChange={handleValueChange} />
-          <br />
-          <label className="text-primary-100 font-bold">Password:</label>
-          <br />
-          <input type="password" name="password" onChange={handleValueChange} />
-          <br />
-        </div>
+          {/* Email section */}
+          <div>
+            <label className="text-primary-100 font-bold">Email:</label>
+            <br />
+            <input
+              className="w-full p-1 border-1 border-black"
+              type="text"
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loggingIn}
+            />
+          </div>
+          {/* Password section */}
+          {loggingIn ? (
+            <div>
+              <br />
+              <label className="text-primary-100 font-bold">Password:</label>
+              <br />
+              <input
+                className="w-full p-1 border-1 border-black"
+                type="password"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          ) : null}
 
-        <div className="flex justify-center mt-10">
-          <button
-            className="bg-tertiary-60 hover:bg-tertiary-40 p-1 px-4 rounded text-headline-small text-tertiary-100 "
-            type="submit"
-          >
-            Submit
-          </button>
+          <br />
         </div>
       </form>
+      {/* Check the user Email if it is valid */}
+
+      <div className="flex justify-center mt-10">
+        {loggingIn ? (
+          <button
+            className="bg-tertiary-60 hover:bg-tertiary-40 p-1 px-4 rounded text-lg font-bold text-tertiary-100 mx-4"
+            onClick={() => {
+              setLoggingIn(false);
+            }}
+          >
+            Back
+          </button>
+        ) : null}
+
+        <button
+          className="bg-tertiary-60 hover:bg-tertiary-40 p-1 px-4 rounded text-lg font-bold text-tertiary-100 mx-4"
+          onClick={() => {
+            setLoggingIn(true);
+          }}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }
