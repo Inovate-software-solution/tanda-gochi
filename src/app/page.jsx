@@ -15,6 +15,7 @@ export default function Home() {
   const [clocking, setClocking] = useState(true);
   const [success, setSuccess] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   //Use for triggering reload on gif
@@ -32,7 +33,7 @@ export default function Home() {
       setSuccess(false);
       setFailed(false);
       setClocking(true);
-    }, 3000);
+    }, 5000);
     return () => clearTimeout(timer);
   }, [clocking]);
 
@@ -58,19 +59,23 @@ export default function Home() {
   }
 
   async function ClockIn() {
-    await fetch(process.env.BACKEND_API + "/clocking/clockin", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        DeviceToken: localStorage.getItem("DeviceToken"),
-        Passcode: idText,
-        GameResult: "win",
-      }),
-    })
+    const response = await fetch(
+      process.env.BACKEND_API + "/clocking/clockin",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          DeviceToken: localStorage.getItem("DeviceToken"),
+          Passcode: idText,
+          GameResult: "win",
+        }),
+      }
+    )
       .then((res) => res.json())
       .then((data) => data);
+    return response;
   }
 
   return (
@@ -154,8 +159,10 @@ export default function Home() {
               <button
                 className="bg-tertiary-60 hover:bg-tertiary-40 text-[30px] px-8 rounded-full text-white"
                 onClick={async () => {
+                  setClocking(false);
+                  setLoading(true);
                   const response = await ClockIn();
-                  console.log(response);
+                  setLoading(false);
                   if (!response.error) {
                     DisplaySuccess();
                     setReloadKey((prevKey) => prevKey + 1); // Use functional form
@@ -220,6 +227,16 @@ export default function Home() {
               >
                 BACK
               </button>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Appear on loading */}
+        {loading ? (
+          <div className="h-full">
+            {/* Add the reloadKey as the key attribute */}
+            <div className="mt-[250px] text-[40px] animate-bounce text-blue-900 text bold align-middle items-center font-bold">
+              Loading
             </div>
           </div>
         ) : null}
