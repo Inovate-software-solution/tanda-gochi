@@ -1,10 +1,10 @@
 "use client";
 
+import React, { useState, useEffect } from 'react';
+import { useRouter } from "next/navigation";
 import Sidebar from "../../../components/Info/Sidebar";
 import Inventory from "../../../components/Pet/Inventory";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import Alert from "@/components/Pet/Alert";
 import eatbanana from "@/public/images/eatbanana.gif";
 import rightwalkingImage from "../../../public/images/walk.gif";
 import leftwalkingImage from "../../../public/images/walkleft.gif";
@@ -17,6 +17,7 @@ import playImage from "@/public/images/playball.gif";
 
 const Page = () => {
   // API related states
+  const router = useRouter();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState([]);
@@ -57,10 +58,15 @@ const Page = () => {
   // Get the Current User's Inventory
   useEffect(() => {
     const token = sessionStorage.getItem('jwt');
-    if (!token) {
-        console.error("No JWT token found in session storage.");
-        return;
-    }
+    // if (!token) {
+    //     console.error("No JWT token found in session storage.");
+    //     setTimeout(() => {
+    //       router.push("/auth");
+    //     }, 2000);
+    //     return (
+    //       <Alert text={"You need to log in to access virtual pet. Redirecting..."}/>
+    //     );
+    // }
     
     fetch(`https://capstone.marcusnguyen.dev/api/Users/current`, {
       method: 'GET',
@@ -72,11 +78,6 @@ const Page = () => {
     .then((data) => {
         if (data) {
           setUserData(data)
-          // setCredits(data.Credits || 0);
-          // setInventory(data.Inventory || []);
-          // setOutfitInventory(data.OutfitInventory || []);
-          // setToyInventory(data.ToysInventory || []);
-          // setLastInteracted(data.LastInteracted);
             
           if (data.LastInteracted) {
               const timePast = Date.now() - data.LastInteracted;
