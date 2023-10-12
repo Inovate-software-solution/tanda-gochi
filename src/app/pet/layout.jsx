@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Sidebar from "../../../components/Info/Sidebar";
 
 export default function RootLayout({ children }) {
   const router = useRouter();
@@ -25,11 +26,6 @@ export default function RootLayout({ children }) {
     }
   }, []);
 
-  // if (isLoading) {
-  //   return <div>Loading...</div>; // Or your loading component
-  // } else {
-  //   return <Sidebar>{children}</Sidebar>;
-  // }
   if (content === "loading") {
     return <div>Loading...</div>;
   }
