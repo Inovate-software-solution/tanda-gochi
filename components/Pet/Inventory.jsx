@@ -319,7 +319,7 @@ const Inventory = (props) => {
                 {props.typeProp === "Shop" && items.map((item, index) => (
                   <Item
                     key={item._id}
-                    image={item.ImageURL}
+                    image={"public/items/" + item.ImageURL}
                     name={item.Name}
                     price={item.Price}
                     onClick={() => buyFood(item._id, item.Price)}
@@ -328,7 +328,7 @@ const Inventory = (props) => {
                 {props.typeProp === "Shop" && outfits.map((item, index) => (
                   <Item
                     key={item._id}
-                    image={item.ImageURL}
+                    image={"public/outfits/" + item.ImageURL}
                     name={item.Name}
                     price={item.Price}
                     onClick={() => buyOutfit(item._id, item.Price)}
@@ -337,7 +337,7 @@ const Inventory = (props) => {
                 {props.typeProp === "Shop" && toys.map((item, index) => (
                   <Item
                     key={item._id}
-                    image={item.ImageURL}
+                    image={"public/toys/" + item.ImageURL}
                     name={item.Name}
                     price={item.Price}
                     onClick={() => buyToy(item._id, item.Price)}
