@@ -152,7 +152,7 @@ const Page = () => {
   };
 
   const animateWalking = () => {
-    if (!(isDancing || isEating || isWearingHat)) {
+    if (!(isDancing || isEating || isWearingHat||isplaying)) {
       const newPositionX = positionX + step * direction;
       //console.log("x:", positionX);
       if (newPositionX >= 250) {
