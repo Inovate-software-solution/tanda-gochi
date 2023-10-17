@@ -3,18 +3,87 @@ import Item from "./Item.jsx";
 import Alert from "./Alert.jsx"
 
 const Inventory = (props) => {
-  const [itemsToDisplay, setItemsToDisplay] = useState([]);
+  const [itemsToDisplay, setItemsToDisplay] = useState({
+    items: [],
+    outfits: [],
+    toys: []
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isEating, setIsEating] = useState(false);
-
-  const [items, setItems] = useState([]);
-  const [outfits, setOutfits] = useState([]);
-  const [toys, setToys] = useState([]);
   
   const [alertVisibility, setAlertVisibility] = useState(false);
 
   const baseURL = process.env.BACKEND_API;
+
+  const renderShopItem = (item, type) => {
+    let baseURL = "https://capstone.marcusnguyen.dev/api/public/uploads/";
+    let imageURL;
+    let handleClick;
+
+    switch(type) {
+        case 'items':
+            imageURL = `${baseURL}items/${item.ImageURL}`;
+            handleClick = () => buyFood(item._id, item.Price);
+            break;
+        case 'outfits':
+            imageURL = `${baseURL}outfits/${item.ImageURL}`;
+            handleClick = () => buyOutfit(item._id, item.Price);
+            break;
+        case 'toys':
+            imageURL = `${baseURL}toys/${item.ImageURL}`;
+            handleClick = () => buyToy(item._id, item.Price);
+            break;
+        default:
+            return null;
+    }
+
+    return (
+        <Item
+            key={item._id}
+            image={imageURL}
+            name={item.Name}
+            price={item.Price}
+            onClick={handleClick}
+        />
+    );
+}
+
+const renderInventoryItem = (item) => {
+    let handleClick;
+    switch(props.typeProp) {
+        case "Food":
+            handleClick = () => {
+                props.startEatAnimation();
+                consumeFood(item.ItemId);
+            };
+            break;
+        case "Toys":
+            handleClick = () => {
+                props.startPlayAnimation();
+                props.playWithPet();
+            };
+            break;
+        case "Outfits":
+            handleClick = () => {
+                props.startWearHatAnimation();
+                equipOutfit(item.OutfitId);
+            };
+            break;
+        default:
+            return null;
+    }
+
+    return (
+        <Item
+            key={item.ItemId || item.ToyId || item.OutfitId}
+            image={item.ImageURL}
+            name={item.ItemId || item.ToyId || item.OutfitId}
+            onClick={handleClick}
+        />
+    );
+}
+
 
   // Load items to display based on which button was pressed
   useEffect(() => {
@@ -24,46 +93,50 @@ const Inventory = (props) => {
         return;
     }
 
-    if (props.typeProp === "Food") {
-      setItemsToDisplay(props.userData.inventory);
-    } else if (props.typeProp === "Toys") {
-      setItemsToDisplay(props.userData.toyInventory);
-    } else if (props.typeProp === "Outfits") {
-      setItemsToDisplay(props.userData.outfitInventory);
-    } else if (props.typeProp === "Shop") {
-      const config = {
-        method: 'GET',
-        headers: {
-            "Authorization": `Bearer ${token}`
-        }
-      };
+    const fetchData = async () => {
+      if (props.typeProp === "Shop") {
+        setIsLoading(true);
+        try {
+          const config = {
+            method: 'GET',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+          };
 
-      Promise.all([
-          fetch(process.env.BACKEND_API + "/items", config).then((res) => res.json()),
-          fetch(process.env.BACKEND_API + "/outfits", config).then((res) => res.json()),
-          fetch(process.env.BACKEND_API + "/toys", config).then((res) => res.json())
-      ]).then(([itemsData, outfitsData, toysData]) => {
-          setItems(itemsData);
-          setOutfits(outfitsData);
-          setToys(toysData);
-      }).catch(error => {
+          const [itemsData, outfitsData, toysData] = await Promise.all([
+              fetch(process.env.BACKEND_API + "/items", config).then((res) => res.json()),
+              fetch(process.env.BACKEND_API + "/outfits", config).then((res) => res.json()),
+              fetch(process.env.BACKEND_API + "/toys", config).then((res) => res.json())
+          ]);
+
+          setItemsToDisplay({
+            items: itemsData,
+            outfits: outfitsData,
+            toys: toysData
+          });
+        } catch (error) {
           console.error("Error fetching data:", error);
-      });
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        setItemsToDisplay({
+          items: props.typeProp === "Food" ? props.userData.inventory : [],
+          outfits: props.typeProp === "Outfits" ? props.userData.outfitInventory : [],
+          toys: props.typeProp === "Toys" ? props.userData.toyInventory : []
+        });
+      }
     }
-  }, [
-    props.typeProp,
-    props.userData.inventory,
-    props.userData.toyInventory,
-    props.userData.outfitInventory
-  ]);
+
+    fetchData();
+
+  }, [props.typeProp, props.userData]);
 
   // for testing
   useEffect(() => {
-    console.log(items);
-    console.log(outfits);
-    console.log(toys);
-  }, [items, outfits, toys]);
-
+    console.log(itemsToDisplay);
+  }, [itemsToDisplay]);
 
   // #### TO-DO ###
   // Need to search the loaded items from database to be able to load them
@@ -131,6 +204,7 @@ const Inventory = (props) => {
       setError(error);
     } finally {
       setIsLoading(false);
+      console.log("successfully purchased");
     }
   }
 
@@ -157,6 +231,8 @@ const Inventory = (props) => {
       setError(error);
     } finally {
       setIsLoading(false);
+      console.log("successfully purchased");
+      console.log(props.userData.Credits);
     }
   }
 
@@ -184,6 +260,8 @@ const Inventory = (props) => {
       setError(error);
     } finally {
       setIsLoading(false);
+      console.log("successfully purchased");
+      console.log(props.userData.Credits);
     }
   }
 
@@ -267,87 +345,25 @@ const Inventory = (props) => {
             </div>
           )}
 
-          {!isLoading &&
-            (itemsToDisplay ? (
-              <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
-                {itemsToDisplay.map((item) => {
-                  if (props.typeProp === "Food") {
-                    return (
-                      <Item
-                        key={item.ItemId}
-                        image={item.ImageURL}
-                        name={item.ItemId}
-                        quantity={item.Quantity}
-                        onClick={() => {
-                          props.startEatAnimation();
-                          consumeFood(item.ItemId);
-                        }}
-                      />
-                    );
-                  } else if (props.typeProp === "Toys") {
-                    return (
-                      <Item
-                        key={item.ToyId}
-                        image={item.ImageURL}
-                        name={item.ToyId}
-                        onClick={() => {
-                          props.startPlayAnimation();
-                          props.playWithPet();
-                        }}
-                      />
-                    );
-                  } else if (props.typeProp === "Outfit") {
-                    return (
-                      <Item
-                        key={item.OutfitId}
-                        image={item.ImageURL}
-                        name={item.OutfitId}
-                        onClick={() => {
-                          props.startWearHatAnimation();
-                          equipOutfit(item.OutfitId);
-                        }}
-                      />
-                    );
-                  }
-                })}
-              </div>
+        {!isLoading && (
+          <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
+            {props.typeProp === "Shop" ? (
+              Object.keys(itemsToDisplay).map(key => 
+                (itemsToDisplay[key]?.length ? itemsToDisplay[key].map(
+                  item => renderShopItem(item, key)
+                  ) : null)
+              )
             ) : (
-              <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
-                {alertVisibility && 
-                  <Alert text={"Not enough credits left"}/>
-                }
-                {props.typeProp === "Shop" && items.map((item, index) => (
-                  <Item
-                    key={item._id}
-                    image={"public/items/" + item.ImageURL}
-                    name={item.Name}
-                    price={item.Price}
-                    onClick={() => buyFood(item._id, item.Price)}
-                  />
-                ))}
-                {props.typeProp === "Shop" && outfits.map((item, index) => (
-                  <Item
-                    key={item._id}
-                    image={"public/outfits/" + item.ImageURL}
-                    name={item.Name}
-                    price={item.Price}
-                    onClick={() => buyOutfit(item._id, item.Price)}
-                  />
-                ))}
-                {props.typeProp === "Shop" && toys.map((item, index) => (
-                  <Item
-                    key={item._id}
-                    image={"public/toys/" + item.ImageURL}
-                    name={item.Name}
-                    price={item.Price}
-                    onClick={() => buyToy(item._id, item.Price)}
-                  />
-                ))}
-                {props.typeProp !== "Shop" && (
-                  <Alert text={"No items yet ☹️. Earn some credits and spoil your pet with fun goodies!"}/>
-                )}
-              </div>
-            ))}
+              Object.keys(itemsToDisplay).some(key => itemsToDisplay[key]?.length > 0) ? (
+                Object.keys(itemsToDisplay).map(key =>
+                  itemsToDisplay[key].map(item => renderInventoryItem(item))
+                )
+              ) : (
+                <Alert text={"No items yet ☹️. Earn some credits and spoil your pet with fun goodies!"}/>
+              )
+            )}
+          </div>
+        )}  
         </div>
       )}
     </div>

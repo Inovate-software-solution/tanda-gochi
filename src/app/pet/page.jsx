@@ -14,6 +14,46 @@ import walkLeftImageWithHat from "../../../public/images/walklefthat.gif";
 import wearHatImage from "../../../public/images/wearhat.gif";
 import playImage from "@/public/images/playball.gif";
 
+const mockUser = {
+  _id: "123123123123",
+  Email: "demo_account_user199087+1@tanda.co",
+  Password: "abcdxyzetc",
+  Score: 9999,
+  Credits: 9999,
+  Badges: [
+    {}
+  ],
+  toyInventory: [
+    {
+      ToyId: "TestToy1",
+    },
+    {
+      ToyId: "TestToy2",
+    },
+  ],
+  inventory: [
+    {
+      ItemId: "TestFood1",
+      Quantity: 3,
+    },
+    {
+      ItemId: "TestFood2",
+      Quantity: 1,
+    },
+  ],
+  outfitInventory: [
+    {
+      OutfitId: "TestOutfit1",
+      Equipped: false,
+    },
+    {
+      OutfitId: "TestOutfit2",
+      Equipped: false,
+    },
+  ],
+  pets: [],
+}
+
 const Page = () => {
   // API related states
   const router = useRouter();
@@ -62,7 +102,7 @@ const Page = () => {
     .then((res) => res.json())
     .then((data) => {
         if (data) {
-          setUserData(data)
+          setUserData(mockUser)
             
           if (data.LastInteracted) {
               const timePast = Date.now() - data.LastInteracted;
@@ -138,7 +178,7 @@ const Page = () => {
   };
 
   const startEatAnimation = () => {
-    if (hasFood1 && hasFood2) {
+    //if (hasFood1 && hasFood2) {
       setIsEating(true);
       setTimeout(() => {
         setIsEating(false);
@@ -146,7 +186,7 @@ const Page = () => {
         setDirection(1);
         requestAnimationFrame(animateWalking);
       }, 4000);
-    }
+    //}
   };
 
   const startPlayAnimation = () => {
@@ -176,6 +216,7 @@ const Page = () => {
   function toggleWindow(windowToUse) {
     setInventoryType(windowToUse);
     setWindowVisible(!isWindowVisible);
+    console.log("window toggled");
     if (windowToUse == "Toys") {
       setUseToysWindow(true);
       setUseItemWindow(false);
