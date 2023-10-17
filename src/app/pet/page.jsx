@@ -178,7 +178,7 @@ const Page = () => {
   };
 
   const startEatAnimation = () => {
-    if (hasFood1 && hasFood2) {
+    //if (hasFood1 && hasFood2) {
       setIsEating(true);
       setTimeout(() => {
         setIsEating(false);
@@ -186,7 +186,7 @@ const Page = () => {
         setDirection(1);
         requestAnimationFrame(animateWalking);
       }, 4000);
-    }
+    //}
   };
 
   const startPlayAnimation = () => {

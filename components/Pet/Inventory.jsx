@@ -64,7 +64,7 @@ const renderInventoryItem = (item) => {
                 props.playWithPet();
             };
             break;
-        case "Outfit":
+        case "Outfits":
             handleClick = () => {
                 props.startWearHatAnimation();
                 equipOutfit(item.OutfitId);
