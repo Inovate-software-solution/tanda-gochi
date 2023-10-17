@@ -157,7 +157,7 @@ const Page = () => {
       setIsplaying(false);
       setDirection(1);
       requestAnimationFrame(animateWalking);
-    }, 1000);
+    }, 2000);
   };
 
   const startWearHatAnimation = () => {
