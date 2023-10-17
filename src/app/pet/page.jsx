@@ -102,7 +102,7 @@ const Page = () => {
     .then((res) => res.json())
     .then((data) => {
         if (data) {
-          setUserData(mockUser)
+          setUserData(data)
             
           if (data.LastInteracted) {
               const timePast = Date.now() - data.LastInteracted;

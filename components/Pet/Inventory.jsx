@@ -8,6 +8,7 @@ const Inventory = (props) => {
     outfits: [],
     toys: []
   });
+  const [fetchedItems, setFetchedItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isEating, setIsEating] = useState(false);
@@ -15,7 +16,9 @@ const Inventory = (props) => {
   const [alertVisibility, setAlertVisibility] = useState(false);
 
   const baseURL = process.env.BACKEND_API;
-
+  const [token, setToken] = useState("");
+  
+  //helper functions
   const renderShopItem = (item, type) => {
     let baseURL = "https://capstone.marcusnguyen.dev/api/public/uploads/";
     let imageURL;
@@ -37,7 +40,6 @@ const Inventory = (props) => {
         default:
             return null;
     }
-
     return (
         <Item
             key={item._id}
@@ -47,51 +49,98 @@ const Inventory = (props) => {
             onClick={handleClick}
         />
     );
-}
+  }
 
-const renderInventoryItem = (item) => {
+  const renderInventoryItem = async (item) => {
     let handleClick;
+    let path;
+    let route;
+    let fetchedItem;
+
     switch(props.typeProp) {
         case "Food":
-            handleClick = () => {
-                props.startEatAnimation();
-                consumeFood(item.ItemId);
-            };
-            break;
+          path = "items"
+          route = "ItemId";
+          handleClick = () => {
+            props.startEatAnimation();
+            consumeFood(item.ItemId);
+          };
+          break;
         case "Toys":
-            handleClick = () => {
-                props.startPlayAnimation();
-                props.playWithPet();
-            };
-            break;
+          path = "toys"
+          route = "ToyId";
+          handleClick = () => {
+            props.startPlayAnimation();
+            props.playWithPet();
+          };
+          break;
         case "Outfits":
-            handleClick = () => {
-                props.startWearHatAnimation();
-                equipOutfit(item.OutfitId);
-            };
-            break;
+          path = "outfits"
+          route = "OutfitId";
+          handleClick = () => {
+            props.startWearHatAnimation();
+            equipOutfit(item.OutfitId);
+          };
+          break;
         default:
             return null;
     }
 
+    try {
+      const response = await fetch(`${baseURL}/${path}/${item[route]}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+      });
+
+      fetchedItem = await response.json();
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch for item with ID: ${item[route]}`);
+      }
+
+      setFetchedItems(prevItems => [...prevItems, {
+        id: fetchedItem._id,
+        image: `${baseURL}/public/uploads/${path}/${fetchedItem.ImageURL}`,
+        name: fetchedItem.Name,
+        onClick: handleClick,
+      }]);
+    } catch (error) {
+      setError(error);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+
     return (
         <Item
-            key={item.ItemId || item.ToyId || item.OutfitId}
-            image={item.ImageURL}
-            name={item.ItemId || item.ToyId || item.OutfitId}
+            key={fetchedItem._id}
+            image={`${baseURL}${props.typeProp.toLowerCase()}/${fetchedItem.ImageURL}`}
+            name={fetchedItem.Name}
             onClick={handleClick}
         />
     );
-}
+  }
 
-
+  useEffect(() => {
+    if(props.typeProp !== "Shop") {
+      setFetchedItems([]);
+      
+      Object.keys(itemsToDisplay).forEach(key => {
+        if (itemsToDisplay[key] && Array.isArray(itemsToDisplay[key])) {
+          itemsToDisplay[key].forEach(item => {
+            renderInventoryItem(item);
+          });
+        }
+      });
+    }
+  }, [itemsToDisplay]);
+  
   // Load items to display based on which button was pressed
   useEffect(() => {
-    const token = sessionStorage.getItem('jwt');
-    if (!token) {
-        console.error("No JWT token found in session storage.");
-        return;
-    }
+    console.log(props.userData);
 
     const fetchData = async () => {
       if (props.typeProp === "Shop") {
@@ -122,24 +171,22 @@ const renderInventoryItem = (item) => {
         }
       } else {
         setItemsToDisplay({
-          items: props.typeProp === "Food" ? props.userData.inventory : [],
-          outfits: props.typeProp === "Outfits" ? props.userData.outfitInventory : [],
-          toys: props.typeProp === "Toys" ? props.userData.toyInventory : []
+          items: props.typeProp === "Food" ? props.userData.Inventory : [],
+          outfits: props.typeProp === "Outfits" ? props.userData.OutfitsInventory : [],
+          toys: props.typeProp === "Toys" ? props.userData.ToysInventory : []
         });
       }
     }
 
-    fetchData();
+    const currentToken = sessionStorage.getItem('jwt');
+    if (currentToken) {
+      setToken(currentToken);
+      fetchData();
+    } else {
+      console.error("No JWT token found in session storage.");
+    }
 
   }, [props.typeProp, props.userData]);
-
-  // for testing
-  useEffect(() => {
-    console.log(itemsToDisplay);
-  }, [itemsToDisplay]);
-
-  // #### TO-DO ###
-  // Need to search the loaded items from database to be able to load them
 
   async function consumeFood(ItemId) {
     try {
@@ -155,6 +202,7 @@ const renderInventoryItem = (item) => {
       });
     } catch (error) {
       setError(error);
+      console.log(error);
     } finally {
       props.feedPet();
       setIsLoading(false);
@@ -182,31 +230,42 @@ const renderInventoryItem = (item) => {
 
   async function buyFood(id, price) {
     if (price > props.userData.Credits) {
-      setAlertVisibility(true);
-    
-      setTimeout(() => {
-        setAlertVisibility(false);
-      }, 2000);
+        setAlertVisibility(true);
+
+        setTimeout(() => {
+            setAlertVisibility(false);
+        }, 2000);
     }
+
     try {
-      const response = await fetch(baseURL + "User/action/buy/item", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          ItemId: id,
-          Quantity: 1
-        }),
-      });
+        const response = await fetch(baseURL + "/User/action/buy/item", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                ItemId: id,
+                Quantity: 1
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        console.log("Server Response:", responseData);
+
     } catch (error) {
-      setError(error);
+        setError(error);
+        console.log(error);
     } finally {
-      setIsLoading(false);
-      console.log("successfully purchased");
+        setIsLoading(false);
+        console.log("bought food");
     }
   }
+
 
   async function buyOutfit(id, price) {
     if (price > props.userData.Credits) {
@@ -227,11 +286,18 @@ const renderInventoryItem = (item) => {
           OutfitId: id
         }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Server Response:", responseData)
     } catch (error) {
       setError(error);
     } finally {
       setIsLoading(false);
-      console.log("successfully purchased");
+      console.log("bought outfit");
       console.log(props.userData.Credits);
     }
   }
@@ -256,11 +322,19 @@ const renderInventoryItem = (item) => {
           ToyId: id
         }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Server Response:", responseData)
     } catch (error) {
       setError(error);
+      console.log(error);
     } finally {
       setIsLoading(false);
-      console.log("successfully purchased");
+      console.log("bought toy");
       console.log(props.userData.Credits);
     }
   }
@@ -347,17 +421,18 @@ const renderInventoryItem = (item) => {
 
         {!isLoading && (
           <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
+            {alertVisibility && 
+              <Alert text={"Not enough credits left"}/>
+            }
             {props.typeProp === "Shop" ? (
               Object.keys(itemsToDisplay).map(key => 
                 (itemsToDisplay[key]?.length ? itemsToDisplay[key].map(
                   item => renderShopItem(item, key)
-                  ) : null)
+                ) : null)
               )
             ) : (
-              Object.keys(itemsToDisplay).some(key => itemsToDisplay[key]?.length > 0) ? (
-                Object.keys(itemsToDisplay).map(key =>
-                  itemsToDisplay[key].map(item => renderInventoryItem(item))
-                )
+              fetchedItems.length > 0 ? (
+                fetchedItems.map(item => <Item key={item.id} image={item.image} name={item.name} onClick={item.onClick} />)
               ) : (
                 <Alert text={"No items yet ☹️. Earn some credits and spoil your pet with fun goodies!"}/>
               )
