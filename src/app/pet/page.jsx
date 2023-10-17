@@ -176,6 +176,7 @@ const Page = () => {
   function toggleWindow(windowToUse) {
     setInventoryType(windowToUse);
     setWindowVisible(!isWindowVisible);
+    console.log("window toggled");
     if (windowToUse == "Toys") {
       setUseToysWindow(true);
       setUseItemWindow(false);

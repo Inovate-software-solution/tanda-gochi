@@ -3,7 +3,7 @@ import Item from "./Item.jsx";
 import Alert from "./Alert.jsx"
 
 const Inventory = (props) => {
-  const [itemsToDisplay, setItemsToDisplay] = useState([]);
+  const [itemsToDisplay, setItemsToDisplay] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isEating, setIsEating] = useState(false);
@@ -25,11 +25,17 @@ const Inventory = (props) => {
     }
 
     if (props.typeProp === "Food") {
-      setItemsToDisplay(props.userData.inventory);
+      setItemsToDisplay({
+        singleArray: props.userData.inventory
+      });
     } else if (props.typeProp === "Toys") {
-      setItemsToDisplay(props.userData.toyInventory);
+      setItemsToDisplay({
+        singleArray: props.userData.toyInventory
+      });
     } else if (props.typeProp === "Outfits") {
-      setItemsToDisplay(props.userData.outfitInventory);
+      setItemsToDisplay({
+        singleArray: props.userData.outfitInventory
+      });
     } else if (props.typeProp === "Shop") {
       const config = {
         method: 'GET',
@@ -46,8 +52,16 @@ const Inventory = (props) => {
           setItems(itemsData);
           setOutfits(outfitsData);
           setToys(toysData);
+          
+          setItemsToDisplay({
+            items: itemsData,
+            outfits: outfitsData,
+            toys: toysData
+        });
       }).catch(error => {
           console.error("Error fetching data:", error);
+      }).finally(() => {
+        setIsLoading(false);
       });
     }
   }, [
@@ -267,87 +281,105 @@ const Inventory = (props) => {
             </div>
           )}
 
-          {!isLoading &&
-            (itemsToDisplay ? (
-              <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
-                {itemsToDisplay.map((item) => {
-                  if (props.typeProp === "Food") {
-                    return (
-                      <Item
-                        key={item.ItemId}
-                        image={item.ImageURL}
-                        name={item.ItemId}
-                        quantity={item.Quantity}
-                        onClick={() => {
-                          props.startEatAnimation();
-                          consumeFood(item.ItemId);
-                        }}
-                      />
-                    );
-                  } else if (props.typeProp === "Toys") {
-                    return (
-                      <Item
-                        key={item.ToyId}
-                        image={item.ImageURL}
-                        name={item.ToyId}
-                        onClick={() => {
-                          props.startPlayAnimation();
-                          props.playWithPet();
-                        }}
-                      />
-                    );
-                  } else if (props.typeProp === "Outfit") {
-                    return (
-                      <Item
-                        key={item.OutfitId}
-                        image={item.ImageURL}
-                        name={item.OutfitId}
-                        onClick={() => {
-                          props.startWearHatAnimation();
-                          equipOutfit(item.OutfitId);
-                        }}
-                      />
-                    );
+        {!isLoading && (
+          <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
+            {
+              props.typeProp === "Shop" 
+              ? (
+                // Display the shop items
+                Object.keys(itemsToDisplay).map(key => itemsToDisplay[key].map(item => {
+                  let imageURL;
+                  switch(key) {
+                    case 'items':
+                      imageURL = "https://capstone.marcusnguyen.dev/api/public/uploads/items/" + item.ImageURL;
+                      return (
+                        <Item
+                          key={item._id}
+                          image={imageURL}
+                          name={item.Name}
+                          price={item.Price}
+                          onClick={() => buyFood(item._id, item.Price)}
+                        />
+                      );
+                    case 'outfits':
+                      imageURL = "https://capstone.marcusnguyen.dev/api/public/uploads/outfits/" + item.ImageURL;
+                      return (
+                        <Item
+                          key={item._id}
+                          image={imageURL}
+                          name={item.Name}
+                          price={item.Price}
+                          onClick={() => buyOutfit(item._id, item.Price)}
+                        />
+                      );
+                    case 'toys':
+                      imageURL = "https://capstone.marcusnguyen.dev/api/public/uploads/toys/" + item.ImageURL;
+                      return (
+                        <Item
+                          key={item._id}
+                          image={imageURL}
+                          name={item.Name}
+                          price={item.Price}
+                          onClick={() => buyToy(item._id, item.Price)}
+                        />
+                      );
+                    default:
+                      return null;
                   }
-                })}
-              </div>
-            ) : (
-              <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
-                {alertVisibility && 
-                  <Alert text={"Not enough credits left"}/>
-                }
-                {props.typeProp === "Shop" && items.map((item, index) => (
-                  <Item
-                    key={item._id}
-                    image={"public/items/" + item.ImageURL}
-                    name={item.Name}
-                    price={item.Price}
-                    onClick={() => buyFood(item._id, item.Price)}
-                  />
-                ))}
-                {props.typeProp === "Shop" && outfits.map((item, index) => (
-                  <Item
-                    key={item._id}
-                    image={"public/outfits/" + item.ImageURL}
-                    name={item.Name}
-                    price={item.Price}
-                    onClick={() => buyOutfit(item._id, item.Price)}
-                  />
-                ))}
-                {props.typeProp === "Shop" && toys.map((item, index) => (
-                  <Item
-                    key={item._id}
-                    image={"public/toys/" + item.ImageURL}
-                    name={item.Name}
-                    price={item.Price}
-                    onClick={() => buyToy(item._id, item.Price)}
-                  />
-                ))}
-                {props.typeProp !== "Shop" && (
-                  <Alert text={"No items yet ☹️. Earn some credits and spoil your pet with fun goodies!"}/>
-                )}
-              </div>
-            ))}
+                }))
+              )
+              : itemsToDisplay.singleArray 
+              ? (
+                itemsToDisplay.singleArray.map(item => {
+                  switch(props.typeProp) {
+                    case "Food":
+                      return (
+                        <Item
+                          key={item.ItemId}
+                          image={item.ImageURL}
+                          name={item.ItemId}
+                          quantity={item.Quantity}
+                          onClick={() => {
+                            props.startEatAnimation();
+                            consumeFood(item.ItemId);
+                          }}
+                        />
+                      );
+                    case "Toys":
+                      return (
+                        <Item
+                          key={item.ToyId}
+                          image={item.ImageURL}
+                          name={item.ToyId}
+                          onClick={() => {
+                            props.startPlayAnimation();
+                            props.playWithPet();
+                          }}
+                        />
+                      );
+                    case "Outfit":
+                      return (
+                        <Item
+                          key={item.OutfitId}
+                          image={item.ImageURL}
+                          name={item.OutfitId}
+                          onClick={() => {
+                            props.startWearHatAnimation();
+                            equipOutfit(item.OutfitId);
+                          }}
+                        />
+                      );
+                    default:
+                      return null;
+                  }
+                })
+              )
+              : (
+                <Alert text={"No items yet ☹️. Earn some credits and spoil your pet with fun goodies!"}/>
+              )
+            }
+          </div>
+        )}
         </div>
       )}
     </div>
