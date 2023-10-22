@@ -62,8 +62,8 @@ const Page = () => {
   const [userData, setUserData] = useState([]);
 
   // Stats related states
-  const [loneliness, setLoneliness] = useState(50);
-  const [hungriness, setHungriness] = useState(50);
+  const [Wellbeing, setWellbeing] = useState(100);
+  const [hungriness, setHungriness] = useState(0);
 
   // Animation related states
   const [positionX, setPositionX] = useState(0);
@@ -84,11 +84,6 @@ const Page = () => {
   const [isWindowVisible, setWindowVisible] = useState(false);
   const [inventoryType, setInventoryType] = useState("");
 
-  const [useToysWindow, setUseToysWindow] = useState(false);
-  const [useItemWindow, setUseItemWindow] = useState(false);
-  const [useOutfitWindow, setUseOutfitWindow] = useState(false);
-  const [useShopWindow, setUseShopWindow] = useState(false);
-
   // Get the Current User's Inventory
   useEffect(() => {
     const token = sessionStorage.getItem('jwt');
@@ -103,15 +98,13 @@ const Page = () => {
     .then((data) => {
         if (data) {
           setUserData(data)
-            
-          if (data.LastInteracted) {
-              const timePast = Date.now() - data.LastInteracted;
-              const newStats = (timePast / (1000 * 60 * 60)) * 3;
-              setHungriness(prevHungriness => newStats + prevHungriness);
-              setLoneliness(prevLoneliness => newStats + prevLoneliness);
-          } else {
-              setHungriness(50);
-              setLoneliness(50);
+          
+          if (data.LastInteraction) {
+              const timePast = Date.now() - data.LastInteraction;
+              console.log(Date.now() - data.LastInteraction);
+              const newStats = (timePast / (1000 * 60 * 60)) * 10;
+              //setHungriness(prevHungriness => newStats + prevHungriness);
+              setWellbeing(prevWellbeing => prevWellbeing - newStats);
           }
         }
     })
@@ -135,16 +128,10 @@ const Page = () => {
     };
   }, [positionX, direction, isDancing, isEating, isWearingHat]);
   
-  // Stats related functions
-  const feedPet = () => {
-    setHungriness((prevHungriness) =>
-      prevHungriness > 10 ? prevHungriness - 10 : 0
-    );
-  };
-
-  const playWithPet = () => {
-    setLoneliness((prevLoneliness) =>
-      prevLoneliness > 10 ? prevLoneliness - 10 : 0
+  // Stats related function
+  const interactWithPet = () => {
+    setWellbeing((prevWellbeing) =>
+      prevWellbeing > 100 ? prevWellbeing + 5 : 100
     );
   };
 
@@ -216,28 +203,6 @@ const Page = () => {
   function toggleWindow(windowToUse) {
     setInventoryType(windowToUse);
     setWindowVisible(!isWindowVisible);
-    console.log("window toggled");
-    if (windowToUse == "Toys") {
-      setUseToysWindow(true);
-      setUseItemWindow(false);
-      setUseOutfitWindow(false);
-      setUseShopWindow(false);
-    } else if (windowToUse == "Food") {
-      setUseToysWindow(false);
-      setUseItemWindow(true);
-      setUseOutfitWindow(false);
-      setUseShopWindow(false);
-    } else if (windowToUse == "Outfits") {
-      setUseToysWindow(false);
-      setUseItemWindow(false);
-      setUseOutfitWindow(true);
-      setUseShopWindow(false);
-    } else if (windowToUse == "Shop") {
-      setUseToysWindow(false);
-      setUseItemWindow(false);
-      setUseOutfitWindow(false);
-      setUseShopWindow(true);
-    }
   }
 
   return (
@@ -256,8 +221,7 @@ const Page = () => {
               startEatAnimation={startEatAnimation}
               startPlayAnimation={startPlayAnimation}
               startWearHatAnimation={startWearHatAnimation}
-              feedPet={feedPet}
-              playWithPet={playWithPet}
+              interactWithPet={interactWithPet}
               userData={userData}
             />
             <div
@@ -323,24 +287,24 @@ const Page = () => {
 
           <div className="navbar bg-base-100 flex flex-col md:flex-row justify-center items-center mt-3 md:w-3/4 lg:w-1/3 xl:w-3/4">
             <div className="w-full md:w-1/3">
-              <p className="font-bold mr-2">Loneliness</p>
+              <p className="font-bold mr-2">Wellbeing</p>
               <progress
                 className="progress progress-accent w-full md:w-2/3 xl:w-56 mr-2"
-                value={loneliness}
+                value={Wellbeing}
                 max="100"
               ></progress>
-              <p className="text-xs mt-1">{loneliness}%</p>
+              <p className="text-xs mt-1">{parseFloat(Wellbeing).toFixed(2)}%</p>
             </div>
 
-            <div className="w-full md:w-1/3">
+            {/* <div className="w-full md:w-1/3">
               <p className="font-bold mr-2">Hungriness</p>
               <progress
                 className="progress progress-success w-full md:w-2/3 xl:w-56 mr-2"
                 value={hungriness}
                 max="100"
               ></progress>
-              <p className="text-xs mt-1">{hungriness}%</p>
-            </div>
+              <p className="text-xs mt-1">{parseFloat(hungriness).toFixed(3)}%</p>
+            </div> */}
 
             {/* {useToysWindow ? <div>Actual Toys windows</div> : null} */}
 

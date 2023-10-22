@@ -14,6 +14,7 @@ const Inventory = (props) => {
   const [isEating, setIsEating] = useState(false);
   
   const [alertVisibility, setAlertVisibility] = useState(false);
+  const [alertText, setAlertText] = useState("");
 
   const baseURL = process.env.BACKEND_API;
   const [token, setToken] = useState("");
@@ -42,11 +43,12 @@ const Inventory = (props) => {
     }
     return (
         <Item
-            key={item._id}
-            image={imageURL}
-            name={item.Name}
-            price={item.Price}
-            onClick={handleClick}
+          type={"shop"}
+          key={item._id}
+          image={imageURL}
+          name={item.Name}
+          price={item.Price}
+          onClick={handleClick}
         />
     );
   }
@@ -62,8 +64,7 @@ const Inventory = (props) => {
           path = "items"
           route = "ItemId";
           handleClick = () => {
-            props.startEatAnimation();
-            consumeFood(item.ItemId);
+            consumeFood(item.ItemId, item.Quantity);
           };
           break;
         case "Toys":
@@ -71,7 +72,7 @@ const Inventory = (props) => {
           route = "ToyId";
           handleClick = () => {
             props.startPlayAnimation();
-            props.playWithPet();
+            props.interactWithPet();
           };
           break;
         case "Outfits":
@@ -105,6 +106,9 @@ const Inventory = (props) => {
         id: fetchedItem._id,
         image: `${baseURL}/public/uploads/${path}/${fetchedItem.ImageURL}`,
         name: fetchedItem.Name,
+        type: path,
+        quantity: item.Quantity,
+        description: fetchedItem.Description,
         onClick: handleClick,
       }]);
     } catch (error) {
@@ -113,13 +117,18 @@ const Inventory = (props) => {
     } finally {
       setIsLoading(false);
     }
+    console.log('Type:123', path);
+    console.log('TypeProp:', props.typeProp);
 
     return (
         <Item
-            key={fetchedItem._id}
-            image={`${baseURL}${props.typeProp.toLowerCase()}/${fetchedItem.ImageURL}`}
-            name={fetchedItem.Name}
-            onClick={handleClick}
+          key={fetchedItem._id}
+          image={`${baseURL}${props.typeProp.toLowerCase()}/${fetchedItem.ImageURL}`}
+          name={fetchedItem.Name}
+          quantity={item.Quantity}
+          description={fetchedItem.Description}
+          type={"test"}
+          onClick={handleClick}
         />
     );
   }
@@ -140,7 +149,6 @@ const Inventory = (props) => {
   
   // Load items to display based on which button was pressed
   useEffect(() => {
-    console.log(props.userData);
 
     const fetchData = async () => {
       if (props.typeProp === "Shop") {
@@ -188,6 +196,7 @@ const Inventory = (props) => {
 
   }, [props.typeProp, props.userData]);
 
+
   async function consumeFood(ItemId) {
     try {
       const response = await fetch(baseURL + "/User/action/use/item", {
@@ -200,14 +209,20 @@ const Inventory = (props) => {
           ItemId: ItemId,
         }),
       });
+
+      if (response.status === 403) {
+        toggleAlert("You don't have any of this item left, please purchase more!")
+        return;
+      }
+      props.interactWithPet();
+      props.startEatAnimation();
+      setIsLoading(false);
+
     } catch (error) {
       setError(error);
-      console.log(error);
-    } finally {
-      props.feedPet();
-      setIsLoading(false);
     }
   }
+
 
   async function equipOutfit(OutfitId) {
     try {
@@ -228,13 +243,10 @@ const Inventory = (props) => {
     }
   }
 
-  async function buyFood(id, price) {
-    if (price > props.userData.Credits) {
-        setAlertVisibility(true);
 
-        setTimeout(() => {
-            setAlertVisibility(false);
-        }, 2000);
+  async function buyFood(id, price) {
+    if (price > props.Userdata.Credits) {
+      toggleAlert("Not enough credits left");
     }
 
     try {
@@ -268,13 +280,10 @@ const Inventory = (props) => {
 
 
   async function buyOutfit(id, price) {
-    if (price > props.userData.Credits) {
-      setAlertVisibility(true);
-    
-      setTimeout(() => {
-        setAlertVisibility(false);
-      }, 2000);
+    if (price > props.userdata.Credits) {
+      toggleAlert("Not enough credits left");
     }
+
     try {
       const response = await fetch(baseURL + "/User/action/buy/outfit", {
         method: "POST",
@@ -297,18 +306,12 @@ const Inventory = (props) => {
       setError(error);
     } finally {
       setIsLoading(false);
-      console.log("bought outfit");
-      console.log(props.userData.Credits);
     }
   }
 
   async function buyToy(id, price) {
-    if (price > props.userData.Credits) {
-      setAlertVisibility(true);
-    
-      setTimeout(() => {
-        setAlertVisibility(false);
-      }, 2000);
+    if (price > props.Userdata.Credits) {
+      toggleAlert("Not enough credits left");
     }
 
     try {
@@ -339,6 +342,17 @@ const Inventory = (props) => {
     }
   }
 
+  const toggleAlert = (text) => {
+    setAlertVisibility(true);
+    setAlertText(text);
+    
+    setTimeout(() => {
+      setAlertVisibility(false);
+      setAlertText("");
+    }, 2000);
+    
+  }
+
   return (
     <div className="h-screen flex justify-center">
       {props.visibilityProp && (
@@ -365,7 +379,7 @@ const Inventory = (props) => {
                   height={30}
                   style={{ marginRight: "10px" }}
                 />
-                Credits: {props.userData.credits}
+                Credits: {props.userData.Credits}
               </div>
             )}
             <button
@@ -422,7 +436,7 @@ const Inventory = (props) => {
         {!isLoading && (
           <div className="mt-3 p-2 h-48 overflow-y-scroll bg-blue-100 rounded-lg grid grid-cols-4 gap-2 place-items-center">
             {alertVisibility && 
-              <Alert text={"Not enough credits left"}/>
+              <Alert text={alertText}/>
             }
             {props.typeProp === "Shop" ? (
               Object.keys(itemsToDisplay).map(key => 
@@ -432,7 +446,7 @@ const Inventory = (props) => {
               )
             ) : (
               fetchedItems.length > 0 ? (
-                fetchedItems.map(item => <Item key={item.id} image={item.image} name={item.name} onClick={item.onClick} />)
+                fetchedItems.map(item => <Item key={item.id} image={item.image} name={item.name} description={item.description} type={item.type} quantity={item.quantity} onClick={item.onClick} />)
               ) : (
                 <Alert text={"No items yet ☹️. Earn some credits and spoil your pet with fun goodies!"}/>
               )
