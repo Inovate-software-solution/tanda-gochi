@@ -141,7 +141,9 @@ const Page = () => {
   };
 
   const animateWalking = () => {
+
     if (!(isDancing || isEating || isWearingHat || isplaying)) {
+
       const newPositionX = positionX + step * direction;
 
       if (newPositionX >= 250) {
