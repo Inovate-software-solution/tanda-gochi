@@ -23,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "hook/useAnimationFrame.js", "components/General/InteractiveGames/index.js", "components/General/Games/index.js"],
   "exclude": ["node_modules"]
 }
