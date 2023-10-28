@@ -5,6 +5,7 @@ import Success from "@/public/images/check-green.gif";
 import Failed from "@/public/images/error-img.gif";
 import TandaLogo from "@/components/General/TandaLogo";
 import LiveTime from "@/components/General/LiveTime";
+import Game from "@/components/General/Games";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -12,11 +13,15 @@ export default function Home() {
 
   const [idText, setIdText] = useState("");
 
-  const [clocking, setClocking] = useState(true);
+  const [clocking, setClocking] = useState(false);
   const [success, setSuccess] = useState(false);
   const [failed, setFailed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Game result
+  const [miniGame, setMiniGame] = useState(false);
+  const [gameResult, setGameResult] = useState("");
 
   //Use for triggering reload on gif
   const [reloadKey, setReloadKey] = useState(0);
@@ -30,9 +35,9 @@ export default function Home() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setSuccess(false);
-      setFailed(false);
-      setClocking(true);
+      // setSuccess(false);
+      // setFailed(false);
+      // setClocking(true);
     }, 5000);
     return () => clearTimeout(timer);
   }, [clocking]);
@@ -238,6 +243,13 @@ export default function Home() {
             <div className="mt-[250px] text-[40px] animate-bounce text-blue-900 text bold align-middle items-center font-bold">
               Loading
             </div>
+          </div>
+        ) : null}
+
+        {/* Minigame */}
+        {miniGame ? (
+          <div>
+            <Game />
           </div>
         ) : null}
       </div>
