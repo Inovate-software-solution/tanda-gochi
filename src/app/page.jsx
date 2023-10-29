@@ -7,6 +7,7 @@ import TandaLogo from "@/components/General/TandaLogo";
 import LiveTime from "@/components/General/LiveTime";
 import Game from "@/components/General/Games";
 import { useRouter } from "next/navigation";
+import { send } from "process";
 
 export default function Home() {
   const router = useRouter();
@@ -19,8 +20,10 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [clockRespone, setClockResponse] = useState(null);
+
   // Game result
-  const [miniGame, setMiniGame] = useState(true);
+  const [miniGame, setMiniGame] = useState(false);
   const [gameResult, setGameResult] = useState("");
 
   //Use for triggering reload on gif
@@ -35,21 +38,25 @@ export default function Home() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // setSuccess(false);
-      // setFailed(false);
-      // setClocking(true);
-      // setMiniGame(false);
-    }, 10000);
+      if (!response.error) {
+        DisplaySuccess();
+        setReloadKey((prevKey) => prevKey + 1); // Use functional form
+      } else {
+        setErrorMessage(response.message);
+        DisplayFailed();
+        setReloadKey((prevKey) => prevKey + 1); // Use functional form
+      }
+    }, 4000);
     return () => clearTimeout(timer);
-  }, [clocking]);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // setSuccess(true);
-      // setFailed(false);
-      // setClocking(false);
-      // setMiniGame(false);
-    }, 8500);
+      setSuccess(false);
+      setFailed(false);
+      setMiniGame(false);
+      setClocking(true);
+    }, 8000);
     return () => clearTimeout(timer);
   }, [clocking]);
 
@@ -96,7 +103,7 @@ export default function Home() {
         body: JSON.stringify({
           DeviceToken: localStorage.getItem("DeviceToken"),
           Passcode: idText,
-          GameResult: "win",
+          GameResult: gameResult,
         }),
       }
     )
@@ -187,17 +194,21 @@ export default function Home() {
                 className="bg-tertiary-60 hover:bg-tertiary-40 text-[30px] px-8 rounded-full text-white"
                 onClick={async () => {
                   setClocking(false);
-                  setLoading(true);
+                  //setLoading(true);
                   const response = await ClockIn();
-                  setLoading(false);
-                  if (!response.error) {
-                    DisplaySuccess();
-                    setReloadKey((prevKey) => prevKey + 1); // Use functional form
-                  } else {
-                    setErrorMessage(response.message);
-                    DisplayFailed();
-                    setReloadKey((prevKey) => prevKey + 1); // Use functional form
-                  }
+                  setClockResponse(response);
+
+                  //setLoading(false);
+                  // if (!response.error) {
+                  //   DisplaySuccess();
+                  //   setReloadKey((prevKey) => prevKey + 1); // Use functional form
+                  // } else {
+                  //   setErrorMessage(response.message);
+                  //   DisplayFailed();
+                  //   setReloadKey((prevKey) => prevKey + 1); // Use functional form
+                  // }
+
+                  setMiniGame(true);
                 }}
               >
                 CLOCK
@@ -269,8 +280,8 @@ export default function Home() {
         ) : null}
 
         {/* Minigame */}
-        <div className={miniGame? "hidden" : "invisible"}>
-          <Game/>
+        <div className={miniGame ? "visible" : "hidden"}>
+          <Game setGameResult={setGameResult} />
         </div>
       </div>
     </div>

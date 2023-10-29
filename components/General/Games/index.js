@@ -9,7 +9,7 @@ import { drawHand } from "./utilities";
 
 import * as fp from "fingerpose";
 
-function Games() {
+function Games(props) {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -134,14 +134,17 @@ function Games() {
             (gameEmoji == "victory" && result == 2)
           ) {
             setAnnouncement("Draw!");
+            props.setGameResult("win");
           } else if (
             (gameEmoji == "gesture0" && result == 2) ||
             (gameEmoji == "gesture5" && result == 0) ||
             (gameEmoji == "victory" && result == 1)
           ) {
             setAnnouncement("You win!");
+            props.setGameResult("win");
           } else {
             setAnnouncement("You lose!");
+            props.setGameResult("win");
           }
           console.log(
             "Your choice: " +
