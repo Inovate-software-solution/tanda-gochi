@@ -116,7 +116,7 @@ function Games(props) {
             setComputerRespond(null);
             console.log(emoji);
             setGame("rps-end");
-          }, 2000);
+          }, 4000);
           break;
         case "rps-end":
           const result = getRandomInt(3);

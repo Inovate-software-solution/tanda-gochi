@@ -42,7 +42,7 @@ export default function Home() {
       setFailed(false);
       setMiniGame(false);
       setClocking(true);
-    }, 8000);
+    }, 12000);
     return () => clearTimeout(timer);
   }, [clocking]);
 
@@ -185,7 +185,7 @@ export default function Home() {
                   setLoading(false);
 
                   setMiniGame(true);
-                  await delay(3000);
+                  await delay(8000);
 
                   setLoading(false);
                   const response = await ClockIn();
