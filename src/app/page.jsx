@@ -5,7 +5,9 @@ import Success from "@/public/images/check-green.gif";
 import Failed from "@/public/images/error-img.gif";
 import TandaLogo from "@/components/General/TandaLogo";
 import LiveTime from "@/components/General/LiveTime";
+import Game from "@/components/General/Games";
 import { useRouter } from "next/navigation";
+import { send } from "process";
 
 export default function Home() {
   const router = useRouter();
@@ -17,6 +19,12 @@ export default function Home() {
   const [failed, setFailed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [clockRespone, setClockResponse] = useState({});
+
+  // Game result
+  const [miniGame, setMiniGame] = useState(false);
+  const [gameResult, setGameResult] = useState("");
 
   //Use for triggering reload on gif
   const [reloadKey, setReloadKey] = useState(0);
@@ -32,16 +40,20 @@ export default function Home() {
     const timer = setTimeout(() => {
       setSuccess(false);
       setFailed(false);
+      setMiniGame(false);
       setClocking(true);
-    }, 5000);
+    }, 8000);
     return () => clearTimeout(timer);
   }, [clocking]);
+
+  const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
   function DisplaySuccess() {
     setClocking(false);
     setSuccess(true);
     setFailed(false);
     setIdText("");
+    setMiniGame(false);
   }
 
   function DisplayFailed() {
@@ -49,6 +61,7 @@ export default function Home() {
     setSuccess(false);
     setFailed(true);
     setIdText("");
+    setMiniGame(false);
   }
 
   function DisplayReset() {
@@ -56,6 +69,15 @@ export default function Home() {
     setSuccess(false);
     setFailed(false);
     setIdText("");
+    setMiniGame(false);
+  }
+
+  function DisplayGame() {
+    setClocking(false);
+    setSuccess(false);
+    setFailed(false);
+    setIdText("");
+    setMiniGame(true);
   }
 
   async function ClockIn() {
@@ -161,7 +183,14 @@ export default function Home() {
                 onClick={async () => {
                   setClocking(false);
                   setLoading(true);
+
+                  setMiniGame(true);
+                  await delay(3000);
+
+                  setLoading(true);
                   const response = await ClockIn();
+                  setClockResponse(response);
+
                   setLoading(false);
                   if (!response.error) {
                     DisplaySuccess();
@@ -240,6 +269,11 @@ export default function Home() {
             </div>
           </div>
         ) : null}
+
+        {/* Minigame */}
+        <div className={miniGame ? "visible" : "hidden"}>
+          <Game setGameResult={setGameResult} />
+        </div>
       </div>
     </div>
   );
