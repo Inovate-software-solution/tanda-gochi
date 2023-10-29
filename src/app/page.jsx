@@ -13,14 +13,14 @@ export default function Home() {
 
   const [idText, setIdText] = useState("");
 
-  const [clocking, setClocking] = useState(false);
+  const [clocking, setClocking] = useState(true);
   const [success, setSuccess] = useState(false);
   const [failed, setFailed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   // Game result
-  const [miniGame, setMiniGame] = useState(false);
+  const [miniGame, setMiniGame] = useState(true);
   const [gameResult, setGameResult] = useState("");
 
   //Use for triggering reload on gif
@@ -38,7 +38,18 @@ export default function Home() {
       // setSuccess(false);
       // setFailed(false);
       // setClocking(true);
-    }, 5000);
+      // setMiniGame(false);
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, [clocking]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // setSuccess(true);
+      // setFailed(false);
+      // setClocking(false);
+      // setMiniGame(false);
+    }, 8500);
     return () => clearTimeout(timer);
   }, [clocking]);
 
@@ -47,6 +58,7 @@ export default function Home() {
     setSuccess(true);
     setFailed(false);
     setIdText("");
+    setMiniGame(false);
   }
 
   function DisplayFailed() {
@@ -54,6 +66,7 @@ export default function Home() {
     setSuccess(false);
     setFailed(true);
     setIdText("");
+    setMiniGame(false);
   }
 
   function DisplayReset() {
@@ -61,6 +74,15 @@ export default function Home() {
     setSuccess(false);
     setFailed(false);
     setIdText("");
+    setMiniGame(false);
+  }
+
+  function DisplayGame() {
+    setClocking(false);
+    setSuccess(false);
+    setFailed(false);
+    setIdText("");
+    setMiniGame(true);
   }
 
   async function ClockIn() {
@@ -247,11 +269,9 @@ export default function Home() {
         ) : null}
 
         {/* Minigame */}
-        {miniGame ? (
-          <div>
-            <Game />
-          </div>
-        ) : null}
+        <div className={miniGame? "hidden" : "invisible"}>
+          <Game/>
+        </div>
       </div>
     </div>
   );
