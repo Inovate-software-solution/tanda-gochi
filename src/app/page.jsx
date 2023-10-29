@@ -42,7 +42,7 @@ export default function Home() {
       setFailed(false);
       setMiniGame(false);
       setClocking(true);
-    }, 8000);
+    }, 12000);
     return () => clearTimeout(timer);
   }, [clocking]);
 
@@ -182,12 +182,12 @@ export default function Home() {
                 className="bg-tertiary-60 hover:bg-tertiary-40 text-[30px] px-8 rounded-full text-white"
                 onClick={async () => {
                   setClocking(false);
-                  setLoading(true);
+                  setLoading(false);
 
                   setMiniGame(true);
-                  await delay(3000);
+                  await delay(8000);
 
-                  setLoading(true);
+                  setLoading(false);
                   const response = await ClockIn();
                   setClockResponse(response);
 
