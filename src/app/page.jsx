@@ -20,7 +20,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [clockRespone, setClockResponse] = useState(null);
+  const [clockRespone, setClockResponse] = useState({});
 
   // Game result
   const [miniGame, setMiniGame] = useState(false);
@@ -38,20 +38,6 @@ export default function Home() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (!response.error) {
-        DisplaySuccess();
-        setReloadKey((prevKey) => prevKey + 1); // Use functional form
-      } else {
-        setErrorMessage(response.message);
-        DisplayFailed();
-        setReloadKey((prevKey) => prevKey + 1); // Use functional form
-      }
-    }, 4000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
       setSuccess(false);
       setFailed(false);
       setMiniGame(false);
@@ -59,6 +45,8 @@ export default function Home() {
     }, 8000);
     return () => clearTimeout(timer);
   }, [clocking]);
+
+  const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
   function DisplaySuccess() {
     setClocking(false);
@@ -103,7 +91,7 @@ export default function Home() {
         body: JSON.stringify({
           DeviceToken: localStorage.getItem("DeviceToken"),
           Passcode: idText,
-          GameResult: gameResult,
+          GameResult: "win",
         }),
       }
     )
@@ -194,21 +182,24 @@ export default function Home() {
                 className="bg-tertiary-60 hover:bg-tertiary-40 text-[30px] px-8 rounded-full text-white"
                 onClick={async () => {
                   setClocking(false);
-                  //setLoading(true);
+                  setLoading(true);
+
+                  setMiniGame(true);
+                  await delay(3000);
+
+                  setLoading(true);
                   const response = await ClockIn();
                   setClockResponse(response);
 
-                  //setLoading(false);
-                  // if (!response.error) {
-                  //   DisplaySuccess();
-                  //   setReloadKey((prevKey) => prevKey + 1); // Use functional form
-                  // } else {
-                  //   setErrorMessage(response.message);
-                  //   DisplayFailed();
-                  //   setReloadKey((prevKey) => prevKey + 1); // Use functional form
-                  // }
-
-                  setMiniGame(true);
+                  setLoading(false);
+                  if (!response.error) {
+                    DisplaySuccess();
+                    setReloadKey((prevKey) => prevKey + 1); // Use functional form
+                  } else {
+                    setErrorMessage(response.message);
+                    DisplayFailed();
+                    setReloadKey((prevKey) => prevKey + 1); // Use functional form
+                  }
                 }}
               >
                 CLOCK
