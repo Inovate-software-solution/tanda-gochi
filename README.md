@@ -1,15 +1,37 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Introduction
 
-### Getting Started
+This is an application that was developed for Capstone project.
 
-First, run the development server:
+Supervior: Nick Havilah from Tanda
+
+## Dependencies
+
+- Node.js 18.x
+
+## How to install the project dependencies
+
+```bash
+npm install
+```
+
+## How to run the project
+
+### Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+
+### Build the project
+
+```bash
+npm run build
+```
+
+### Start the project after build
+
+```bash
+npm start
+```
