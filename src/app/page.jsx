@@ -182,12 +182,12 @@ export default function Home() {
                 className="bg-tertiary-60 hover:bg-tertiary-40 text-[30px] px-8 rounded-full text-white"
                 onClick={async () => {
                   setClocking(false);
-                  setLoading(true);
+                  setLoading(false);
 
                   setMiniGame(true);
                   await delay(3000);
 
-                  setLoading(true);
+                  setLoading(false);
                   const response = await ClockIn();
                   setClockResponse(response);
 

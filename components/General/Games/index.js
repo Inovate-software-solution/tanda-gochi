@@ -88,7 +88,7 @@ function Games(props) {
       }
 
       const ctx = canvasRef.current.getContext("2d");
-      drawHand(hand, ctx);
+      //drawHand(hand, ctx);
     }
   };
 
@@ -116,7 +116,7 @@ function Games(props) {
             setComputerRespond(null);
             console.log(emoji);
             setGame("rps-end");
-          }, 5000);
+          }, 2000);
           break;
         case "rps-end":
           const result = getRandomInt(3);
@@ -168,19 +168,24 @@ function Games(props) {
   }, [game]);
 
   return (
-    <div className="App">
+    <div className="sm:w-[400px] sm:h-[650px] bg-red rounded-md">
+      <div className="h-1/4 bg-red rounded-md"/>
+      <div className="h-3/4 bg-red rounded-md">
       <Webcam
         ref={webcamRef}
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          textAlign: "center",
-          zindex: 9,
-          width: 640,
-          height: 480,
-        }}
       />
+      <div>
+        {emoji == null ? (
+          <div>Null</div>
+        ) : (
+          <div className="text-black font-bold text-[24px]" >
+            Player Respond: {playerResult[emoji] ? playerResult[emoji] : emoji}
+          </div>
+        )}
+        <div className="text-black font-bold text-[24px]">Computer Respond: {computerRespond}</div>
+        <div className="text-black font-bold text-[24px]">Game Result: {announcement}</div>
+      </div>
+      </div>
 
       <canvas
         ref={canvasRef}
@@ -195,17 +200,7 @@ function Games(props) {
         }}
       />
 
-      <div style={{ zindex: 10, position: "absolute", left: 1000, right: 0 }}>
-        {emoji == null ? (
-          <div>Null</div>
-        ) : (
-          <div>
-            Player Respond: {playerResult[emoji] ? playerResult[emoji] : emoji}
-          </div>
-        )}
-        <div>Computer Respond: {computerRespond}</div>
-        <div>Game Result: {announcement}</div>
-      </div>
+
     </div>
   );
 }
