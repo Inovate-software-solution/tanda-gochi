@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const Item = (props) => {
-    console.log(props.type);
+    
     return (
         // <div className="h-16 w-16 bg-gray-400 rounded border m-2 rounded-md" onClick={props.onClick}>
         //     <img src={props.image} alt={props.name} className="w-full h-full object-cover rounded-md p-1" />

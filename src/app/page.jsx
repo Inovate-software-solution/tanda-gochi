@@ -125,7 +125,7 @@ export default function Home() {
                 {[0, 1, 2, 3].map((index) => (
                   <div key={index} className="col-span-1 flex justify-center">
                     <input
-                      className="p-1 m-2 w-[50px] h-[50px] border-2 border-black text-center font-bold text-white text-[42px]"
+                      className="bg-white sp-1 m-2 w-[50px] h-[50px] border-2 border-black text-center font-bold text-black text-[42px]"
                       readOnly
                       value={idText.split("")[index] || ""}
                     />

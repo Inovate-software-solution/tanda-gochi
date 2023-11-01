@@ -245,7 +245,8 @@ const Inventory = (props) => {
 
 
   async function buyFood(id, price) {
-    if (price > props.Userdata.Credits) {
+    console.log(props);
+    if (price > props.userData.Credits) {
       toggleAlert("Not enough credits left");
     }
 
@@ -280,7 +281,7 @@ const Inventory = (props) => {
 
 
   async function buyOutfit(id, price) {
-    if (price > props.userdata.Credits) {
+    if (price > props.userData.Credits) {
       toggleAlert("Not enough credits left");
     }
 
